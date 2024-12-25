@@ -34,7 +34,6 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
-    
   }
   Future<void> signOut() async => await FirebaseAuth.instance.signOut();
 
