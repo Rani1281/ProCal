@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:procal/pages/login_page.dart';
+import 'package:procal/pages/signup_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,6 +17,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text("Home Page"),
       ),
       body: Padding(
@@ -23,11 +26,11 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text("Welcome To PROCAL !"),
+              Text("Welcome To PROCAL ! ${FirebaseAuth.instance.currentUser!.email}"),
               const SizedBox(height: 15),
               ElevatedButton(
                 onPressed: signOut,
-                child: const Text('Sign Out')
+                child: const Text('Log Out')
               ),
             ],
           ),
@@ -35,7 +38,10 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-  Future<void> signOut() async => await FirebaseAuth.instance.signOut();
+  Future<void> signOut() async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+  } 
 
   
 }

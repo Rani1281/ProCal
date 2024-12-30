@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:procal/pages/home_page.dart';
-import 'package:procal/pages/signup_page.dart';
+import 'package:procal/pages/login_page.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -12,39 +12,68 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  FirebaseAuth.instance
-  .authStateChanges()
-  .listen((User? user) {
-    if (user == null) {
-      print('User is currently signed out!');
-    } else {
-      print('User is signed in!');
-    }
-  });
-
-  runApp(const MaterialApp(home: AuthStateListener()));
+  runApp(const MyApp());
 }
 
-class AuthStateListener extends StatelessWidget {
-  const AuthStateListener({super.key});
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-    stream: FirebaseAuth.instance.authStateChanges(),
-    builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
-        } else if (snapshot.hasData) {
-          // User is signed in
-          return const HomePage();
-        } else {
-          // User is not signed in
-          return const SignupPage();
-        }
-    }
+    return MaterialApp(
+      title: 'ProCal',
+      home: StreamBuilder(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasData) {
+            // User is signed in
+            return const HomePage();
+          } else {
+            // User is not signed in
+            return LoginPage();
+          }
+        },
+      ),
     );
   }
 }
+
+
+// class AuthStateListener extends StatefulWidget {
+//   const AuthStateListener({super.key});
+
+//   @override
+//   State<AuthStateListener> createState() => _AuthStateListenerState();
+// }
+
+// class _AuthStateListenerState extends State<AuthStateListener> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return StreamBuilder<User?>(
+//     stream: FirebaseAuth.instance.idTokenChanges(),
+//     builder: (context, snapshot) {
+//         if (snapshot.connectionState == ConnectionState.waiting) {
+//           return const CircularProgressIndicator();
+//         } else if (snapshot.hasData) {
+//           // User is signed in
+//           print('User is signed in!');
+//           return const HomePage();
+//         } else {
+//           // User is not signed in
+//           print('User is currently signed out!');
+//           return const SignupPage();  
+//         }
+//     }
+//     );
+//   }
+// }
 
 

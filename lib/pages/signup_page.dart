@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_styled_toast/flutter_styled_toast.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:procal/pages/home_page.dart';
+import 'package:procal/pages/login_page.dart';
 import 'package:procal/services/firebase_auth.dart';
 
 class SignupPage extends StatefulWidget {
@@ -13,15 +15,29 @@ class SignupPage extends StatefulWidget {
 class _SignupPageState extends State<SignupPage> {
 
   final AuthService _auth = AuthService();
-
-  TextEditingController emailControler = TextEditingController();
-  TextEditingController passwordControler = TextEditingController();
+  final TextEditingController emailControler = TextEditingController();
+  final TextEditingController passwordControler = TextEditingController();
   //TextEditingController usernameControler = TextEditingController();
+
+  void signUp() async {
+    UserCredential? user = await _auth.createAccountWithEmailAndPassword(
+      emailControler.text.trim(),
+      passwordControler.text.trim()
+    );
+    if(user != null) {
+      print('USER CREATED!');
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
+    }
+    else {
+      print('USER NOT CREATED');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: true,
         title: const Text("Sign Up"),
       ),
       body: Padding(
@@ -31,6 +47,7 @@ class _SignupPageState extends State<SignupPage> {
             // Email field
             TextField(
               controller: emailControler,
+              keyboardType: TextInputType.emailAddress,
               decoration: const InputDecoration(
                 label: Text('Email'),
               ),
@@ -46,43 +63,24 @@ class _SignupPageState extends State<SignupPage> {
             const SizedBox(height: 15),
             // Create account button
             ElevatedButton(
-              onPressed: createUserAccount,
+              onPressed: () => signUp(),
               child: const Text('Create Account')
             ),
+            // Have an account
+            const SizedBox(height: 15),
+            InkWell(
+              onTap: () {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) => LoginPage()
+                  )
+                );
+              },
+              child: const Text('Already have an account? Login')
+            )
           ],
         ),
       ),
     );
-  }
-
-  Future<void> createUserAccount() async {
-    String errorMessage = '';
-    String email = emailControler.text.trim();
-    String password = passwordControler.text.trim();
-
-    try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email,
-        password: password
-      );
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        errorMessage = 'The password is too weak';
-      }
-      else if (e.code == 'email-already-in-use') {
-        errorMessage = 'This email is already in use';
-      }
-      else {
-        errorMessage = 'Something went wrong';
-      }
-      showToast(
-        errorMessage,
-        context: context,
-        position: const StyledToastPosition(align: Alignment.center),
-        animation: StyledToastAnimation.fade,
-      );  
-    } catch (e) {
-      print(e);
-    }
   }
 }
