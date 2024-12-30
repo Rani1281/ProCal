@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:procal/pages/home_page.dart';
 import 'package:procal/pages/signup_page.dart';
 import 'package:procal/services/firebase_auth.dart';
@@ -13,7 +12,7 @@ class LoginPage extends StatelessWidget {
   final TextEditingController passwordControler = TextEditingController();
 
   void signIn(BuildContext context) async {
-    UserCredential? user = await _auth.signInWithEmailAndPassword(
+    User? user = await _auth.signInWithEmailAndPassword(
       emailControler.text.trim(),
       passwordControler.text.trim()
     );

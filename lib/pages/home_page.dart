@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:procal/pages/login_page.dart';
-import 'package:procal/pages/signup_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

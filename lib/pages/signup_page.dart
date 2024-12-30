@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:procal/pages/home_page.dart';
 import 'package:procal/pages/login_page.dart';
+import 'package:procal/pages/verify_email_page.dart';
 import 'package:procal/services/firebase_auth.dart';
 
 class SignupPage extends StatefulWidget {
@@ -20,13 +20,19 @@ class _SignupPageState extends State<SignupPage> {
   //TextEditingController usernameControler = TextEditingController();
 
   void signUp() async {
-    UserCredential? user = await _auth.createAccountWithEmailAndPassword(
+    User? user = await _auth.createAccountWithEmailAndPassword(
       emailControler.text.trim(),
       passwordControler.text.trim()
     );
     if(user != null) {
       print('USER CREATED!');
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
+
+      if(!user.emailVerified) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const VerifyEmailPage()));
+      }
+      else if(user.emailVerified) {
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
+      }
     }
     else {
       print('USER NOT CREATED');

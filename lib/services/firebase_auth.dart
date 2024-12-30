@@ -6,15 +6,15 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   // Sign up
-  Future<UserCredential?> createAccountWithEmailAndPassword(String email, String password) async {
+  Future<User?> createAccountWithEmailAndPassword(String email, String password) async {
     String errorMessage = '';
 
     try {
-      UserCredential user = await _auth.createUserWithEmailAndPassword(
+      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password
       );
-      return user;
+      return userCredential.user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         errorMessage = 'The password is too weak';
@@ -23,7 +23,7 @@ class AuthService {
         errorMessage = 'This email is already in use';
       }
       else {
-        errorMessage = e.code;
+        errorMessage = e.message ?? 'An error occured while creating the account';
       }
       Fluttertoast.showToast(msg: errorMessage, webPosition: 'center');
       return null;
@@ -35,15 +35,15 @@ class AuthService {
   }
 
   // Sign in
-  Future<UserCredential?> signInWithEmailAndPassword(String email, String password) async {
+  Future<User?> signInWithEmailAndPassword(String email, String password) async {
     String errorMessage = '';
 
     try {
-      UserCredential user = await _auth.signInWithEmailAndPassword(
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password
       );
-      return user;
+      return userCredential.user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         errorMessage = 'No user found for that email';
@@ -52,7 +52,7 @@ class AuthService {
         errorMessage = 'Wrong password provided for that user';
       }
       else {
-        errorMessage = e.code;
+        errorMessage = e.message ?? 'An error occured while signing in';
       }
       Fluttertoast.showToast(msg: errorMessage, webPosition: 'center');
       return null;
