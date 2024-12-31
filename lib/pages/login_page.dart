@@ -4,12 +4,21 @@ import 'package:procal/pages/home_page.dart';
 import 'package:procal/pages/signup_page.dart';
 import 'package:procal/services/firebase_auth.dart';
 
-class LoginPage extends StatelessWidget {
-  LoginPage({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   final AuthService _auth = AuthService();
+
   final TextEditingController emailControler = TextEditingController();
+
   final TextEditingController passwordControler = TextEditingController();
+
+  bool isSecured = true;
 
   void signIn(BuildContext context) async {
     User? user = await _auth.signInWithEmailAndPassword(
@@ -48,9 +57,19 @@ class LoginPage extends StatelessWidget {
             // Password field
             TextField(
               controller: passwordControler,
-              decoration: const InputDecoration(
-                label: Text('Password'),
+              decoration: InputDecoration(
+                label: const Text('Password'),
+                suffixIcon: IconButton(
+                      icon: isSecured
+                          ? const Icon(Icons.visibility_off)
+                          : const Icon(Icons.visibility),
+                      onPressed: () {
+                        setState(() {
+                          isSecured = !isSecured;
+                        });
+                      }),
               ),
+              obscureText: isSecured,
             ),
             const SizedBox(height: 15),
             // Login button

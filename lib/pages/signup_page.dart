@@ -13,28 +13,26 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
-
   final AuthService _auth = AuthService();
   final TextEditingController emailControler = TextEditingController();
   final TextEditingController passwordControler = TextEditingController();
   //TextEditingController usernameControler = TextEditingController();
+  bool isSecured = true;
 
   void signUp() async {
     User? user = await _auth.createAccountWithEmailAndPassword(
-      emailControler.text.trim(),
-      passwordControler.text.trim()
-    );
-    if(user != null) {
+        emailControler.text.trim(), passwordControler.text.trim());
+    if (user != null) {
       print('USER CREATED!');
 
-      if(!user.emailVerified) {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const VerifyEmailPage()));
+      if (!user.emailVerified) {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const VerifyEmailPage()));
+      } else if (user.emailVerified) {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => const HomePage()));
       }
-      else if(user.emailVerified) {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
-      }
-    }
-    else {
+    } else {
       print('USER NOT CREATED');
     }
   }
@@ -61,29 +59,31 @@ class _SignupPageState extends State<SignupPage> {
             const SizedBox(height: 15),
             // Password field
             TextField(
-              controller: passwordControler,
-              decoration: const InputDecoration(
-                label: Text('Password'),
-              ),
-            ),
+                controller: passwordControler,
+                decoration: InputDecoration(
+                  label: const Text('Password'),
+                  suffixIcon: IconButton(
+                      icon: isSecured
+                          ? const Icon(Icons.visibility_off)
+                          : const Icon(Icons.visibility),
+                      onPressed: () {
+                        setState(() {
+                          isSecured = !isSecured;
+                        });
+                      }),
+                )),
             const SizedBox(height: 15),
             // Create account button
             ElevatedButton(
-              onPressed: () => signUp(),
-              child: const Text('Create Account')
-            ),
+                onPressed: () => signUp(), child: const Text('Create Account')),
             // Have an account
             const SizedBox(height: 15),
             InkWell(
-              onTap: () {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (context) => LoginPage()
-                  )
-                );
-              },
-              child: const Text('Already have an account? Login')
-            )
+                onTap: () {
+                  Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => LoginPage()));
+                },
+                child: const Text('Already have an account? Login'))
           ],
         ),
       ),
