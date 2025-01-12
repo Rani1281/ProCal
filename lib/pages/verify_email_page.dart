@@ -2,10 +2,12 @@
 
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:procal/pages/home_page.dart';
+import 'package:procal/services/firebase_firestore.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   const VerifyEmailPage({super.key});
@@ -17,6 +19,7 @@ class VerifyEmailPage extends StatefulWidget {
 class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
   User? user = FirebaseAuth.instance.currentUser;
+  final FirestoreService _firestore = FirestoreService();
   Timer? timer;
   bool isEmailVerified = false;
 
@@ -75,6 +78,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                 Navigator.pop(context);
                 if (user != null) {
                   user!.delete();
+                  _firestore.deleteUser(user!.uid);
                   Fluttertoast.showToast(msg: 'Account Deleted');
                 }
               },

@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:procal/pages/login_page.dart';
+import 'package:procal/services/firebase_auth.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,6 +11,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
+  final AuthService _auth = AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +28,18 @@ class _HomePageState extends State<HomePage> {
             children: [
               Text("Welcome To PROCAL ! ${FirebaseAuth.instance.currentUser!.email}"),
               const SizedBox(height: 15),
+
+              // Log out button
               ElevatedButton(
-                onPressed: signOut,
+                onPressed: _auth.signOut,
                 child: const Text('Log Out')
+              ),
+              const SizedBox(height: 15),
+
+              // Delete account button
+              ElevatedButton(
+                onPressed: () {},
+                child: const Text('Delete Account')
               ),
             ],
           ),
@@ -37,10 +47,6 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-  Future<void> signOut() async {
-    await FirebaseAuth.instance.signOut();
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
-  } 
 
   
 }
