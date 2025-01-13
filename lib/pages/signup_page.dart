@@ -22,6 +22,7 @@ class _SignupPageState extends State<SignupPage> {
   bool isSecured = true;
 
   void signUp() async {
+    
     String email = emailControler.text.trim();
     String password = passwordControler.text.trim();
     String username = usernameControler.text.trim();
@@ -30,14 +31,12 @@ class _SignupPageState extends State<SignupPage> {
       email,
       password,
     );
-
     await _firestore.addUser(
       email,
       username,
       user!.uid,
     );
 
-    // ignore: unnecessary_null_comparison
     if (user != null) {
       print('USER CREATED!');
 

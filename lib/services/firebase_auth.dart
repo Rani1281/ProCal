@@ -1,13 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:procal/services/firebase_firestore.dart';
 
 class AuthService {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  //final FirestoreService _firestore = FirestoreService();
 
   // Sign up
   Future<User?> createAccountWithEmailAndPassword(String email, String password) async {
-    String errorMessage = '';
+    String errorMessage;
 
     try {
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
@@ -22,10 +24,13 @@ class AuthService {
       else if (e.code == 'email-already-in-use') {
         errorMessage = 'This email is already in use';
       }
-      else {
-        errorMessage = e.message ?? 'An error occured while creating the account';
+      else if (e.code == 'invalid-email') {
+        errorMessage = 'Email is invalid';
       }
-      Fluttertoast.showToast(msg: errorMessage, webPosition: 'center');
+      else {
+        errorMessage = e.message ?? 'Something went wrong';
+      }
+      Fluttertoast.showToast(msg: errorMessage);
       return null;
     } catch (e) {
       print(e);
@@ -54,7 +59,7 @@ class AuthService {
       else {
         errorMessage = e.message ?? 'An error occured while signing in';
       }
-      Fluttertoast.showToast(msg: errorMessage, webPosition: 'center');
+      Fluttertoast.showToast(msg: errorMessage);
       return null;
     } catch (e) {
       print(e);
@@ -66,17 +71,54 @@ class AuthService {
   Future<void> signOut() async {
     try {
       await _auth.signOut();
+      Fluttertoast.showToast(msg: "Signed out successfuly");
     } catch (e) {
       print(e);
     }
   }
 
   
-  // Add more exeptions
+  Future<bool> deleteUserAccount() async {
+    FirebaseAuth.instance.currentUser!.reload();
+    try {
+      await FirebaseAuth.instance.currentUser!.delete();
+    } on FirebaseAuthException catch(e) {
+      if (e.code == 'requires-recent-login') {
+        print('The user must reauthenticate before this operation can be executed.');
+        // did not went well
+        return false;
+      } 
+    }
+    print("User deleted successfuly!");
+    Fluttertoast.showToast(msg: "Your account has been deleted successfuly");
+    // went well
+    return true;
+  }
 
-  // Future<void> deleteAccount() async {
-  //   final user = FirebaseAuth.instance.currentUser;
-  //   await user?.reauthenticateWithCredential(credential)
-  //   await user?.delete();
-  // } 
+
+  Future<bool> reauthenticate(String email, String password) async {
+
+    final User? user = FirebaseAuth.instance.currentUser;
+
+    try {
+      AuthCredential credential = EmailAuthProvider.credential(
+      email: email,
+      password: password,
+      );
+      if(user != null){
+        await user.reauthenticateWithCredential(credential);
+        print("User re-authenticated succesfully");
+        // The reauthentication succeeded
+        return true;
+      }
+    } on FirebaseAuthException catch(e) {
+      Fluttertoast.showToast(msg: e.message ?? "An error accured");
+    }
+    catch(e) {
+      print(e);
+    }
+    return false;
+  }
+
+
 }

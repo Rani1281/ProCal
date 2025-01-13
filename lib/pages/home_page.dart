@@ -1,6 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:procal/pages/login_page.dart';
+import 'package:procal/pages/reauthenticate_page.dart';
 import 'package:procal/services/firebase_auth.dart';
+import 'package:procal/services/firebase_firestore.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,6 +15,37 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   final AuthService _auth = AuthService();
+  final FirestoreService _firestore = FirestoreService();
+
+  final User? user = FirebaseAuth.instance.currentUser;
+
+
+  Future<void> deleteUser() async {
+    
+    if(user != null){
+      _firestore.deleteUser(user!.uid);
+      bool userDeleted = await _auth.deleteUserAccount();
+      if(userDeleted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+          (Route<dynamic> route) => false,
+        );
+      }
+      else {
+        Navigator.push(context, MaterialPageRoute(
+          builder: (context) => const ReAuthPage())
+        );
+      }
+    }
+    else {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+        (Route<dynamic> route) => false,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +72,7 @@ class _HomePageState extends State<HomePage> {
 
               // Delete account button
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () => deleteUser(),
                 child: const Text('Delete Account')
               ),
             ],
