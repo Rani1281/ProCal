@@ -37,6 +37,7 @@ class _SignupPageState extends State<SignupPage> {
       user!.uid,
     );
 
+    // ignore: unnecessary_null_comparison
     if (user != null) {
       print('USER CREATED!');
 

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:procal/pages/home_page.dart';
 import 'package:procal/pages/login_page.dart';
+import 'package:procal/pages/verify_email_page.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -24,6 +25,8 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
 
+  final _auth = FirebaseAuth.instance;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -33,13 +36,20 @@ class _MyAppState extends State<MyApp> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasData) {
+          } 
+          else if (snapshot.hasData) {
             // User is signed in
-            return const HomePage();
-          } else {
-            // User is not signed in
-            return LoginPage();
-          }
+            if(_auth.currentUser!.emailVerified) {
+              // User email is verified
+              return const HomePage();
+            }
+            else if(!_auth.currentUser!.emailVerified) {
+              // User email is NOT verified
+              return const VerifyEmailPage();
+            } 
+          } 
+          // User is NOT signed in
+          return const LoginPage();
         },
       ),
     );
