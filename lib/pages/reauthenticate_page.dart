@@ -25,7 +25,7 @@ class _ReAuthPageState extends State<ReAuthPage> {
   final TextEditingController passwordControler = TextEditingController();
 
 
-  Future<void> reAuthUser() async {
+  Future<void> reLogUser() async {
 
     String? email = emailControler.text.trim();
     String? password = passwordControler.text.trim();
@@ -94,7 +94,7 @@ class _ReAuthPageState extends State<ReAuthPage> {
 
             // Login button
             ElevatedButton(
-              onPressed: () => reAuthUser(),       
+              onPressed: () => reLogUser(),       
               child: const Text('Login')
             ),
             // Create an account
