@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class AuthPageDesign {
   AuthPageDesign({required this.title, required this.onPressed, required this.buttonText, this.bottomText, this.bottonTextDestination});
 

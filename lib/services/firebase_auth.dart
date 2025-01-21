@@ -15,27 +15,36 @@ class AuthService {
         email: email,
         password: password
       );
+      Fluttertoast.showToast(msg: 'Account has been created successfuly!', gravity: ToastGravity.CENTER);
       return userCredential.user;
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        errorMessage = 'The password is too weak';
+      switch(e.code) {
+        case 'weak-password':
+          errorMessage = 'The password is too weak';
+        break;
+        case 'email-already-in-use':
+          errorMessage = 'This email is already in use';
+        break;
+        case 'invalid-email':
+          errorMessage = 'Email is invalid';
+        break;
+        case 'network-request-failed':
+          errorMessage = 'No internet connection';
+        break;
+        case 'too-many-requests':
+          errorMessage = 'Too many attempts. Please try again later';
+        break;
+        default:
+          errorMessage = 'Something went wrong';
+          print(e.message);
+        break;
       }
-      else if (e.code == 'email-already-in-use') {
-        errorMessage = 'This email is already in use';
-      }
-      else if (e.code == 'invalid-email') {
-        errorMessage = 'Email is invalid';
-      }
-      else {
-        errorMessage = e.message ?? 'Something went wrong';
-      }
-      Fluttertoast.showToast(msg: errorMessage);
+      Fluttertoast.showToast(msg: errorMessage, gravity: ToastGravity.CENTER);
       return null;
     } catch (e) {
       print(e);
       return null;
     } 
-    
   }
 
   // Sign in
@@ -49,16 +58,34 @@ class AuthService {
       );
       return userCredential.user;
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        errorMessage = 'No user found for that email';
+      switch(e.code) {
+        case 'user-not-found':
+          errorMessage = 'User not found';
+        break;
+        case 'wrong-password':
+          errorMessage = 'Password is incorrect';
+        break;
+        case 'invalid-email':
+          errorMessage = 'Email is invalid';
+        break;
+        case 'user-disabled':
+          errorMessage = "This user was disabled";
+        break;
+        case 'network-request-failed':
+          errorMessage = 'No internet connection';
+        break;
+        case 'too-many-requests':
+          errorMessage = 'Too many attempts. Please try again later';
+        break;
+        case 'INVALID_LOGIN_CREDENTIALS' || 'invalid-credential':
+          errorMessage = 'Invalide email or password';
+        break;
+        default:
+          errorMessage = 'Something went wrong';
+          print(e.message);
+        break;
       }
-      else if (e.code == 'wrong-password') {
-        errorMessage = 'Wrong password provided for that user';
-      }
-      else {
-        errorMessage = e.message ?? 'An error occured while signing in';
-      }
-      Fluttertoast.showToast(msg: errorMessage);
+      Fluttertoast.showToast(msg: errorMessage, gravity: ToastGravity.CENTER);
       return null;
     } catch (e) {
       print(e);
@@ -70,7 +97,7 @@ class AuthService {
   Future<void> signOut() async {
     try {
       await _auth.signOut();
-      Fluttertoast.showToast(msg: "Signed out successfuly");
+      Fluttertoast.showToast(msg: "Signed out successfuly", gravity: ToastGravity.CENTER);
     } catch (e) {
       print(e);
     }
@@ -89,13 +116,14 @@ class AuthService {
       } 
     }
     print("User deleted successfuly!");
-    Fluttertoast.showToast(msg: "Your account has been deleted successfuly");
+    Fluttertoast.showToast(msg: "Account has been deleted successfuly", gravity: ToastGravity.CENTER);
     // went well
     return true;
   }
 
 
   Future<bool> reauthenticate(String email, String password) async {
+    String errorMessage = '';
 
     final User? user = FirebaseAuth.instance.currentUser;
 
@@ -104,14 +132,32 @@ class AuthService {
       email: email,
       password: password,
       );
-      if(user != null){
+      if(user != null) {
         await user.reauthenticateWithCredential(credential);
         print("User re-authenticated succesfully");
         // The reauthentication succeeded
         return true;
       }
     } on FirebaseAuthException catch(e) {
-      Fluttertoast.showToast(msg: e.message ?? "An error accured");
+      switch(e.code) {
+        case 'user-mismatch':
+        errorMessage = "The provided credential doesn't match yours";
+        break;
+        case 'user-not-found':
+        errorMessage = 'User not found';
+        break;
+        case 'invalid-email':
+        errorMessage = 'Email is invalid';
+        break;
+        case 'wrong-password':
+        errorMessage = 'Password is incorrect';
+        break;
+        default:
+        errorMessage = 'Something went wrong';
+        print(e.message);
+        break;
+      }
+      Fluttertoast.showToast(msg: errorMessage, gravity: ToastGravity.CENTER);
     }
     catch(e) {
       print(e);

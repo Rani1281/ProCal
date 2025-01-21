@@ -27,8 +27,8 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
   @override
   void initState() {
-    isEmailVerified = user!.emailVerified;
     if (user != null) {
+      isEmailVerified = user!.emailVerified;
       user!.sendEmailVerification();
       print('FIRST EMAIL VERIFICATION SENT');
       timer = Timer.periodic(const Duration(seconds: 3), (timer) async {
@@ -63,6 +63,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
   @override
   Widget build(BuildContext context) {
+    // probably don't need this check but it works
     return isEmailVerified ? const HomePage() :  Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -72,26 +73,25 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
         padding: const EdgeInsets.all(15.0),
         child: Column(
           children: [
-            const Text("A verification email has been sent to your email address"),
+            Text("A verification email has been sent to the email ${user?.email}"),
             const SizedBox(height: 15),
             // Delete account button
             ElevatedButton(
               onPressed: () {
-                Navigator.pop(context);
                 if (user != null) {
-                  _auth.deleteUserAccount();
                   _firestore.deleteUser(user!.uid);
-                  Fluttertoast.showToast(msg: 'Account Deleted');
+                  _auth.deleteUserAccount();
                 }
               },
               child: const Text('Delete Account'),
             ),
             const SizedBox(height: 15),
+
             // Resend verification email button
             ElevatedButton(
               onPressed: () {
                 if (user != null) {
-                  user!.sendEmailVerification();
+                  user?.sendEmailVerification();
                 }
               },
               child: const Text('Resend Verification Email'),
