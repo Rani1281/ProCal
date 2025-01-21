@@ -1,20 +1,23 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:procal/pages/login_page.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:procal/services/firebase_auth.dart';
 import 'package:procal/services/firebase_firestore.dart';
 import 'package:procal/widgets/auth_pages.dart';
+import 'package:procal/widgets/my_toast.dart';
 
 class AuthPage extends StatefulWidget {
-  AuthPage({required this.destination, super.key});
+  const AuthPage({required this.destination, super.key});
 
-  String destination;
+  final String destination;
 
   @override
-  _AuthPageState createState() => _AuthPageState();
+  AuthPageState createState() => AuthPageState();
 }
 
-class _AuthPageState extends State<AuthPage> {
+class AuthPageState extends State<AuthPage> {
 
   late String destination;
   late List<AuthPageDesign> authPages;
@@ -26,17 +29,17 @@ class _AuthPageState extends State<AuthPage> {
 
   final AuthService _auth = AuthService();
   final FirestoreService _firestore = FirestoreService();
+  final MyMoast myMoast = MyMoast();
 
   final TextEditingController emailControler = TextEditingController();
   final TextEditingController passwordControler = TextEditingController();
   final TextEditingController usernameControler = TextEditingController();
   
-  bool isSecured = true;
-
   late String email;
   late String password;
   late String username;
 
+  bool isSecured = true;
 
   @override
   void initState() {
@@ -46,23 +49,14 @@ class _AuthPageState extends State<AuthPage> {
     authPages = [
     AuthPageDesign(title: 'Sign Up', onPressed: signUp, buttonText: 'Create Account', bottomText: 'Already have an account? Log In', bottonTextDestination: 'log-in'),
     AuthPageDesign(title: 'Log In', onPressed: signIn, buttonText: 'Log In', bottomText: "Don't have an account? Sign Up", bottonTextDestination: 'sign-up'),
-    AuthPageDesign(title: 'Re-Log', onPressed: reLogUser, buttonText: 'Re-Log'),
+    AuthPageDesign(title: 'Re-Log', onPressed: reAuthUser, buttonText: 'Re-Log'),
     ];
   }
-
 
   @override
   Widget build(BuildContext context) {
     int id = pageIndexes[destination]!;
-    var thisPage = authPages[id];
-    
-    // if(isSignUp == true) {
-    //   return const SignupPage();
-    // }
-    // else if(isLogin == true) {
-    //   return const LoginPage();
-    // }
-    // return const ReAuthPage();
+    AuthPageDesign thisPage = authPages[id];
 
     return Scaffold(
       appBar: AppBar(
@@ -107,8 +101,8 @@ class _AuthPageState extends State<AuthPage> {
                   label: const Text('Password'),
                   suffixIcon: IconButton(
                       icon: isSecured
-                          ? const Icon(Icons.visibility_off)
-                          : const Icon(Icons.visibility),
+                        ? const Icon(Icons.visibility_off)
+                        : const Icon(Icons.visibility),
                       onPressed: () {
                         setState(() {
                           isSecured = !isSecured;
@@ -116,13 +110,21 @@ class _AuthPageState extends State<AuthPage> {
                       }),
                 )),
             const SizedBox(height: 15),
+
             // Submit button
             ElevatedButton(
               onPressed: () {
-                setEmailAndPassword();
-                thisPage.onPressed();
+                if(checkIfFilled()) {
+                  thisPage.onPressed();
+                }
+                else {
+                  myMoast.show('Please fill all the fields before continuing');
+                }
+                
               },
-              child: Text(thisPage.buttonText)),
+              
+              child: Text(thisPage.buttonText)
+            ),
             // Have an account
             const SizedBox(height: 15),
             thisPage.bottonTextDestination != null
@@ -141,29 +143,18 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
   
-  void setEmailAndPassword() {
-    setState(() {
-      email = emailControler.text.trim();
-      password = passwordControler.text.trim();
-      username = usernameControler.text.trim();
-    });
-  }
-
   // sign up
   Future<void> signUp() async {
     User? user = await _auth.createAccountWithEmailAndPassword(
       email,
       password,
     );
-    await _firestore.addUser(
-      email,
-      username,
-      user!.uid,
-    );
-    // ignore: unnecessary_null_comparison
     if (user != null) {
-      print('USER CREATED!');
-
+      await _firestore.addUser(
+        email,
+        username,
+        user.uid,
+      );
       // if (!user.emailVerified) {
       //   Navigator.push(context, MaterialPageRoute(builder: (context) => const VerifyEmailPage()));
       // } else if (user.emailVerified) {
@@ -188,7 +179,7 @@ class _AuthPageState extends State<AuthPage> {
   }
 
   // re-auth user
-  Future<void> reLogUser() async {
+  Future<void> reAuthUser() async {
     final User? user = FirebaseAuth.instance.currentUser;
 
     // is true or false based on if the user was re-authenticated or not
@@ -203,15 +194,37 @@ class _AuthPageState extends State<AuthPage> {
 
         // Suggestion: maybe add a while loop for userReAuthenticated
         
-        // if(userDeleted) {
-        //   // Go back to home page
-        //   Navigator.pushAndRemoveUntil(
-        //     context,
-        //     MaterialPageRoute(builder: (context) => const LoginPage()),
-        //     (Route<dynamic> route) => false,
-        //   );
-        // }
+        if(!userDeleted) {
+          // Restore user info in firestore
+          int addSign = email.indexOf('@');
+          String restoredUsername = email.substring(0, addSign);
+          _firestore.addUser(email, restoredUsername, user.uid);
+          Fluttertoast.showToast(msg: "An error accured while deleting account", gravity: ToastGravity.CENTER);
+        }
       }
     }  
+  }
+
+  // Checks if the input is null or not. If it is - returns false, Else - returns true
+  bool checkIfFilled() {
+    setState(() {
+      email = emailControler.text.trim();
+      password = passwordControler.text.trim();
+      username = usernameControler.text.trim();
+    });
+    if(email != '' && password != '') {
+      // Email & password are not null
+      if(destination == 'sign-up') {
+        // It is sign up page
+        if(username != '') {
+          // Then also check username
+          return true;
+        }
+        return false;
+      }
+      // It is'nt sign up page
+      return true;
+    }
+    return false;
   }
 }
