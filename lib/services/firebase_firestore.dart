@@ -7,10 +7,15 @@ class FirestoreService {
 
     Future<void> addUser(String email, String username, String userId) async {
       try {
-        await usersCollection.doc(userId).set({
-          'email': email,
-          'username': username,
-        });
+        DocumentSnapshot doc = await usersCollection.doc(userId).get();
+        if(!doc.exists) {
+          print('This document does not exist');
+          await usersCollection.doc(userId).set({
+            'email' : email,
+            'username' : username,
+          });
+        }
+        
       } catch (e) {
         print(e);
       }

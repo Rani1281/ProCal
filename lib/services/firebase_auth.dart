@@ -1,13 +1,19 @@
+// ignore_for_file: avoid_print
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:procal/services/firebase_firestore.dart';
+import 'package:procal/widgets/my_toast.dart';
 
 class AuthService {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  //final FirestoreService _firestore = FirestoreService();
+  final FirestoreService _firestore = FirestoreService();
+  final MyMoast toast = MyMoast();
 
   // Sign up
-  Future<User?> createAccountWithEmailAndPassword(String email, String password) async {
+  Future<void> createAccountWithEmailAndPassword(String email, String password, String username) async {
     String errorMessage;
 
     try {
@@ -15,8 +21,17 @@ class AuthService {
         email: email,
         password: password
       );
-      Fluttertoast.showToast(msg: 'Account has been created successfuly!', gravity: ToastGravity.CENTER);
-      return userCredential.user;
+      if (userCredential.user != null) {
+        toast.show('Account has been created successfuly');
+        await _firestore.addUser(
+          email,
+          username,
+          userCredential.user!.uid,
+        );
+      } else {
+        print('USER NOT CREATED');
+      }
+      // return userCredential.user;
     } on FirebaseAuthException catch (e) {
       switch(e.code) {
         case 'weak-password':
@@ -39,16 +54,16 @@ class AuthService {
           print(e.message);
         break;
       }
-      Fluttertoast.showToast(msg: errorMessage, gravity: ToastGravity.CENTER);
-      return null;
+      toast.show(errorMessage);
+      // return null;
     } catch (e) {
       print(e);
-      return null;
+      // return null;
     } 
   }
 
   // Sign in
-  Future<User?> signInWithEmailAndPassword(String email, String password) async {
+  Future<void> signInWithEmailAndPassword(String email, String password) async {
     String errorMessage = '';
 
     try {
@@ -56,7 +71,10 @@ class AuthService {
         email: email,
         password: password
       );
-      return userCredential.user;
+      if(userCredential.user != null) {
+        toast.show('Welcome back!');
+      }
+      // return userCredential.user;
     } on FirebaseAuthException catch (e) {
       switch(e.code) {
         case 'user-not-found':
@@ -85,11 +103,11 @@ class AuthService {
           print(e.message);
         break;
       }
-      Fluttertoast.showToast(msg: errorMessage, gravity: ToastGravity.CENTER);
-      return null;
+      toast.show(errorMessage);
+      // return null;
     } catch (e) {
       print(e);
-      return null;
+      // return null;
     }
   }
 
@@ -104,39 +122,60 @@ class AuthService {
   }
 
   
-  Future<bool> deleteUserAccount() async {
+  Future<int?> deleteUserAccount() async {
     FirebaseAuth.instance.currentUser!.reload();
     try {
       await FirebaseAuth.instance.currentUser!.delete();
+      toast.show('Account has been deleted successfuly');
+      return 1;
     } on FirebaseAuthException catch(e) {
       if (e.code == 'requires-recent-login') {
         print('The user must reauthenticate before this operation can be executed.');
-        // did not went well
-        return false;
+        return 0;
       } 
+      else if (e.code == 'network-request-failed') {
+        toast.show('No internet connection');
+      }
+    } catch (e) {
+      print(e.toString());
     }
-    print("User deleted successfuly!");
-    Fluttertoast.showToast(msg: "Account has been deleted successfuly", gravity: ToastGravity.CENTER);
-    // went well
-    return true;
+    return null;
   }
 
 
-  Future<bool> reauthenticate(String email, String password) async {
+  Future<void> reauthenticate(String email, String password) async {
     String errorMessage = '';
 
-    final User? user = FirebaseAuth.instance.currentUser;
+    User? user = FirebaseAuth.instance.currentUser;
 
     try {
       AuthCredential credential = EmailAuthProvider.credential(
-      email: email,
-      password: password,
+        email: email,
+        password: password,
       );
       if(user != null) {
-        await user.reauthenticateWithCredential(credential);
-        print("User re-authenticated succesfully");
+        UserCredential newUserCredential = await user.reauthenticateWithCredential(credential);
         // The reauthentication succeeded
-        return true;
+        // return true;
+
+        if(newUserCredential.user != null) {
+          user.reload();
+          // Deletes user again
+          _firestore.deleteUser(user.uid);  // THIS HAS TO BE FIRST
+          deleteUserAccount();
+          
+          user = FirebaseAuth.instance.currentUser;
+
+          if(user != null) {
+            // The user still exists 
+            int addSign = email.indexOf('@');
+            String restoredUsername = email.substring(0, addSign);
+            _firestore.addUser(email, restoredUsername, user.uid);
+          }
+          else {
+            print('User deleted perminantly');
+          }
+        }
       }
     } on FirebaseAuthException catch(e) {
       switch(e.code) {
@@ -152,17 +191,20 @@ class AuthService {
         case 'wrong-password':
         errorMessage = 'Password is incorrect';
         break;
+        case 'network-request-failed':
+        errorMessage = 'No internet connection';
+        break;
         default:
         errorMessage = 'Something went wrong';
         print(e.message);
         break;
       }
-      Fluttertoast.showToast(msg: errorMessage, gravity: ToastGravity.CENTER);
+      toast.show(errorMessage);
     }
     catch(e) {
       print(e);
     }
-    return false;
+    // return false;
   }
 
 

@@ -2,10 +2,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:procal/pages/auth_page.dart';
+import 'package:procal/pages/main_auth.dart';
 import 'package:procal/pages/home_page.dart';
 import 'package:procal/pages/login_page.dart';
 import 'package:procal/pages/verify_email_page.dart';
+import 'package:procal/pages/welcome_page.dart';
+import 'package:procal/widgets/auth_page_design.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -31,7 +33,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'ProCal',
+      title: 'PROCAL',
       home: StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
@@ -50,7 +52,8 @@ class _MyAppState extends State<MyApp> {
             } 
           } 
           // User is NOT signed in
-          return AuthPage(destination: 'sign-up');
+          //return AuthPage(destination: 'sign-up');
+          return const WelcomePage();
         },
       ),
     );

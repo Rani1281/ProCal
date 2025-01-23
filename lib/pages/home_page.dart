@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:procal/pages/reauthenticate_page.dart';
+import 'package:procal/pages/main_auth.dart';
 import 'package:procal/services/firebase_auth.dart';
 import 'package:procal/services/firebase_firestore.dart';
+import 'package:procal/widgets/auth_page_design.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -23,25 +25,20 @@ class _HomePageState extends State<HomePage> {
     
     if(user != null){
       _firestore.deleteUser(user!.uid);
-      bool userDeleted = await _auth.deleteUserAccount();
-      if(!userDeleted) {
-        // Navigator.pushAndRemoveUntil(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => const LoginPage()),
-        //   (Route<dynamic> route) => false,
-        // );
-        Navigator.push(context, MaterialPageRoute(
-          builder: (context) => const ReAuthPage())
+      int? deletionResult = await _auth.deleteUserAccount();
+
+      if(deletionResult == 0) {
+        // Failed because user hasn't logged in
+        Navigator.push(
+          context, MaterialPageRoute(
+            builder: (context) => const MainAuthPage(
+              destination: AuthPages.reAuth
+            )
+          )
         );
       }
     }
-    // else {
-    //   Navigator.pushAndRemoveUntil(
-    //     context,
-    //     MaterialPageRoute(builder: (context) => const LoginPage()),
-    //     (Route<dynamic> route) => false,
-    //   );
-    // }
+
   }
 
   @override
