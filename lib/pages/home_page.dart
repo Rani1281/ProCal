@@ -54,7 +54,7 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("Welcome To PROCAL ! ${FirebaseAuth.instance.currentUser!.email}"),
+              Text("Welcome To PROCAL ! ${FirebaseAuth.instance.currentUser!.displayName}"),
               const SizedBox(height: 15),
 
               // Log out button
@@ -69,11 +69,27 @@ class _HomePageState extends State<HomePage> {
                 onPressed: () => deleteUser(),
                 child: const Text('Delete Account')
               ),
+
+              // Upgrade account button (in anon)
+              isAnon()
+              ? ElevatedButton(
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const MainAuthPage(destination: AuthPages.upgrade))),
+                child: const Text('Upgrade Account')
+              )
+              : const SizedBox(),
+
             ],
           ),
         ),
       ),
     );
+  }
+
+  bool isAnon() {
+    if (user!.isAnonymous) {
+      return true;
+    }
+    return false;
   }
 
   

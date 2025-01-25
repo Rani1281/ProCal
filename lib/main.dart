@@ -41,19 +41,20 @@ class _MyAppState extends State<MyApp> {
             return const Center(child: CircularProgressIndicator());
           } 
           else if (snapshot.hasData) {
+            print('Logged in as: ${_auth.currentUser?.uid}');
             // User is signed in
-            if(_auth.currentUser!.emailVerified) {
-              // User email is verified
-              return const HomePage();
+            if (_auth.currentUser!.providerData.any((provider) => provider.providerId == 'password')) {
+              // The user is signed with email & password provider
+              if(!_auth.currentUser!.emailVerified) {
+                // User email is NOT verified
+                return const VerifyEmailPage();
+              } 
             }
-            else if(!_auth.currentUser!.emailVerified) {
-              // User email is NOT verified
-              return const VerifyEmailPage();
-            } 
+            return const HomePage();   
           } 
           // User is NOT signed in
           //return AuthPage(destination: 'sign-up');
-          return const WelcomePage();
+          return const MainAuthPage(destination: AuthPages.signUp);
         },
       ),
     );

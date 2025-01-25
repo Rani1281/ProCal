@@ -16,4 +16,5 @@ enum AuthPages {
   signUp,
   logIn,
   reAuth,
+  upgrade,
 }
