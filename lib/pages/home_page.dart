@@ -71,12 +71,12 @@ class _HomePageState extends State<HomePage> {
               ),
 
               // Upgrade account button (in anon)
-              isAnon()
-              ? ElevatedButton(
-                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const MainAuthPage(destination: AuthPages.upgrade))),
-                child: const Text('Upgrade Account')
-              )
-              : const SizedBox(),
+              // isAnon()
+              // ? ElevatedButton(
+              //   onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const MainAuthPage(destination: AuthPages.upgrade))),
+              //   child: const Text('Upgrade Account')
+              // )
+              // : const SizedBox(),
 
             ],
           ),

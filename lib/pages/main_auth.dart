@@ -190,14 +190,14 @@ class MainAuthPageState extends State<MainAuthPage> {
 
               // Anonimously button
 
-              isNotAnon()
-              ? MyButton(
-                text: 'Sign In Anonimously',
-                onPressed: () => _auth.signInAnon(),
-                bgColor: Colors.white,
-                icon: const Icon(Icons.person),
-              )
-              : const SizedBox(),
+              // isNotAnon()
+              // ? MyButton(
+              //   text: 'Sign In Anonimously',
+              //   onPressed: () => _auth.signInAnon(),
+              //   bgColor: Colors.white,
+              //   icon: const Icon(Icons.person),
+              // )
+              // : const SizedBox(),
             ],
           ),
         ),
