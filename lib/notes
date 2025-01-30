@@ -1,0 +1,4 @@
+when upgrading account and the email doesn't
+exist make sure that the user can go back without
+deleting their account on the email verify page.
+Maybe make a nav push to the verify email page and enable nav back.
