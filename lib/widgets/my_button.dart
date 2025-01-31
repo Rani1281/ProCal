@@ -17,21 +17,22 @@ class MyButton extends StatelessWidget {
       onPressed: onPressed,
       label: Text(text),
       icon: icon,
-
       style: ElevatedButton.styleFrom(
         backgroundColor: bgColor ?? Colors.lightBlue,
-        foregroundColor: textColor ?? Colors.black,
-        fixedSize: Size(MediaQuery.of(context).size.width, 30),
-        
+        foregroundColor: textColor ?? Colors.white,
+        fixedSize: Size(MediaQuery.of(context).size.width, 50),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20), // Adjust the radius as needed
+        ),
       ),
-      // style: ButtonStyle(
-      //   backgroundColor: WidgetStateProperty.all<Color>(bgColor ?? Colors.lightBlue),
-      //   foregroundColor: WidgetStateProperty.all<Color>(textColor ?? Colors.black),
-      //   fixedSize: WidgetStateProperty.all<Size?>(Size.fromWidth(MediaQuery.of(context).size.width)),
-      //   padding: WidgetStateProperty.all(const EdgeInsets.symmetric(vertical: 12)),
-      //   iconSize: WidgetStateProperty.all(20),
-      // ),
-
     );
+
+    // style: ButtonStyle(
+    //   backgroundColor: WidgetStateProperty.all<Color>(bgColor ?? Colors.lightBlue),
+    //   foregroundColor: WidgetStateProperty.all<Color>(textColor ?? Colors.black),
+    //   fixedSize: WidgetStateProperty.all<Size?>(Size.fromWidth(MediaQuery.of(context).size.width)),
+    //   padding: WidgetStateProperty.all(const EdgeInsets.symmetric(vertical: 12)),
+    //   iconSize: WidgetStateProperty.all(20),
+    // ),
   }
 }

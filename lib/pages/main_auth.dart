@@ -1,9 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:procal/services/firebase_auth.dart';
 import 'package:procal/widgets/auth_page_design.dart';
 import 'package:procal/widgets/my_button.dart';
+import 'package:procal/widgets/my_text_field.dart';
 import 'package:procal/widgets/my_toast.dart';
 
 class MainAuthPage extends StatefulWidget {
@@ -85,43 +87,61 @@ class MainAuthPageState extends State<MainAuthPage> {
               ? Column(
                 children: [
                   // Username field
-                  TextField(
-                    controller: usernameControler,
-                    decoration: const InputDecoration(
-                      label: Text('Username'),
-                    ),
-                  ),
+                  MyTextField(controller: usernameControler, hintText: 'Username'),
+                  // TextField(
+                  //   controller: usernameControler,
+                  //   decoration: const InputDecoration(
+                  //     label: Text('Username'),
+                  //   ),
+                  // ),
                   const SizedBox(height: 15)
                 ],
               )
               : const SizedBox(),
         
               // Email field
-              TextField(
-                controller: emailControler,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  label: Text('Email'),
-                ),
-              ),
+              MyTextField(controller: emailControler, hintText: 'Email'),
+
+              // TextField(
+              //   controller: emailControler,
+              //   keyboardType: TextInputType.emailAddress,
+              //   decoration: const InputDecoration(
+              //     label: Text('Email'),
+              //   ),
+              // ),
               const SizedBox(height: 15),
         
               // Password field
-              TextField(
-                obscureText: isSecured,
-                  controller: passwordControler,
-                  decoration: InputDecoration(
-                    label: const Text('Password'),
-                    suffixIcon: IconButton(
-                        icon: isSecured
-                          ? const Icon(Icons.visibility_off)
-                          : const Icon(Icons.visibility),
-                        onPressed: () {
-                          setState(() {
-                            isSecured = !isSecured;
-                          });
-                        }),
-                  )),
+              MyTextField(
+                controller: passwordControler,
+                hintText: 'Password',
+                hidePassword: isSecured,
+                suffixIcon: IconButton(
+                  icon: isSecured
+                    ? const Icon(Icons.visibility_off)
+                    : const Icon(Icons.visibility),
+                  onPressed: () {
+                    setState(() {
+                      isSecured = !isSecured;
+                    });
+                  }
+                ),
+              ),
+              // TextField(
+              //   obscureText: isSecured,
+              //     controller: passwordControler,
+              //     decoration: InputDecoration(
+              //       label: const Text('Password'),
+              //       suffixIcon: IconButton(
+              //           icon: isSecured
+              //             ? const Icon(Icons.visibility_off)
+              //             : const Icon(Icons.visibility),
+              //           onPressed: () {
+              //             setState(() {
+              //               isSecured = !isSecured;
+              //             });
+              //           }),
+              //     )),
               const SizedBox(height: 15),
         
               // Submit button
@@ -136,7 +156,6 @@ class MainAuthPageState extends State<MainAuthPage> {
                     myToast.show('Please fill all the fields before continuing');
                   }
                 },
-                textColor: Colors.white,
               ),
               
               // Have an account
@@ -167,24 +186,58 @@ class MainAuthPageState extends State<MainAuthPage> {
                   Expanded(child: Container(height: 1, color: Colors.grey[600])),              
                 ],
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 20),
 
               // Continue with google button
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.lightBlue,
-                ),
+              Row(
+                children: [
+                  SizedBox(
+                    height: 30,
+                    width: 30,
+                    child: Image.asset('assets/google-logo.png')
+                  ),
+                  // MyButton(
+                  //   text: 'Continue With Google',
+                  //   onPressed: _auth.signInWithGoogle,
+                  //   bgColor: Colors.white,
+                  //   textColor: Colors.black,
+                  // ),
+                  const SizedBox(width: 14),
 
-                child: const Row(
-                  children: [
-                    // google logo
-                    //Image.asset(name)
-                    Text('Continue with google'),
-                  ],
-                ),
-
+                  Expanded(
+                    child: SizedBox(
+                      height: 50,
+                      child: ElevatedButton.icon(
+                        onPressed: _auth.signInWithGoogle,
+                        label: const Text('Continue With Google'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.black87,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20), // Adjust the radius as needed
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
+
+              // ElevatedButton(
+              //   onPressed: () => _auth.signInWithGoogle(),
+              //   style: ElevatedButton.styleFrom(
+              //     backgroundColor: Colors.lightBlue,
+              //   ),
+
+              //   child: const Row(
+              //     children: [
+              //       // google logo
+              //       //Image.asset(name)
+              //       Text('Continue with google'),
+              //     ],
+              //   ),
+
+              // ),
         
               const SizedBox(height: 8),
 

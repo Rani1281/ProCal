@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:procal/services/firebase_firestore.dart';
 import 'package:procal/widgets/my_toast.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
 
@@ -28,7 +29,6 @@ class AuthService {
           userCredential.user!.uid,
         );
       }
-      toast.show('Account has been created successfuly');
       print('Logged in anonymously as: ${userCredential.user?.uid}');
     } on FirebaseAuthException catch (e) {
       switch(e.code) {
@@ -176,11 +176,59 @@ class AuthService {
 
 
 
+  // Google sign in
+  Future<void> signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    try {
+      await FirebaseAuth.instance.signInWithCredential(credential);
+    } catch (e) {
+      print(e.toString());
+    }
+    
+  }
+
+
+
+  // Sign in with credential
+  // Future<void> signInWithCredential(AuthCredential credential) async {
+  //   try {
+  //     UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+  //     if(userCredential.user != null) {
+  //       //userCredential.user?.updateDisplayName();
+  //       // await _firestore.addUser(
+  //       //   email,
+  //       //   username,
+  //       //   userCredential.user!.uid,
+  //       // );
+  //     }
+  //   } on FirebaseAuthException catch (e) {
+
+  //   } catch (e) {
+  //     print(e.toString());
+  //   }
+  // }
+
+
+
   // Sign out
   Future<void> signOut() async {
     try {
       await _auth.signOut();
-      toast.show('Signed out successfuly!');
+      if(isSignedInWithGoogle()) {
+        await GoogleSignIn().signOut();
+      }
+      toast.show('Signed out successfuly');
     } catch (e) {
       print(e);
     }
@@ -275,6 +323,19 @@ class AuthService {
     }
     // return false;
   }
+
+
+  bool isSignedInWithGoogle() {
+  final user = FirebaseAuth.instance.currentUser;
+  if (user != null) {
+    for (var profile in user.providerData) {
+      if (profile.providerId == 'google.com') {
+        return true; // User signed in with Google
+      }
+    }
+  }
+  return false; // Not signed in or used a different provider
+}
 
 
 }

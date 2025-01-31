@@ -63,6 +63,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '504723991193',
     projectId: 'procal-cc113',
     storageBucket: 'procal-cc113.firebasestorage.app',
+    androidClientId: '504723991193-9qkkn2jqoi2p1ftke8vfs1890h87h30m.apps.googleusercontent.com',
+    iosClientId: '504723991193-eu1mogiqdn7b8c0oiddg0u4b9g5u1hek.apps.googleusercontent.com',
     iosBundleId: 'com.example.procal',
   );
 
