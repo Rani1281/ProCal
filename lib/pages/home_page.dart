@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:procal/pages/reauthenticate_page.dart';
 import 'package:procal/pages/main_auth.dart';
+import 'package:procal/services/delete_user_result.dart';
 import 'package:procal/services/firebase_auth.dart';
 import 'package:procal/services/firebase_firestore.dart';
 import 'package:procal/widgets/auth_page_design.dart';
@@ -16,30 +16,25 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   final AuthService _auth = AuthService();
-  final FirestoreService _firestore = FirestoreService();
-
   final User? user = FirebaseAuth.instance.currentUser;
 
 
   Future<void> deleteUser() async {
-    
     if(user != null){
-      _firestore.deleteUser(user!.uid);
-      int? deletionResult = await _auth.deleteUserAccount();
-
-      if(deletionResult == 0) {
-        // Failed because user hasn't logged in
-        Navigator.push(
-          context, MaterialPageRoute(
-            builder: (context) => const MainAuthPage(
-              destination: AuthPages.reAuth
+      DeleteUserResult? result = await _auth.deleteUserAccount();
+      if(result != null) {
+        if(result.isSuccessful == false) {
+          // Navigate to re-login page
+          Navigator.push(
+            context, MaterialPageRoute(
+              builder: (context) => const MainAuthPage(destination: AuthPages.reAuth)
             )
-          )
-        );
+          );
+        }
       }
     }
-
   }
+  
 
   @override
   Widget build(BuildContext context) {

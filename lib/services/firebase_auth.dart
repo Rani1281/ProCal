@@ -1,7 +1,8 @@
 // ignore_for_file: avoid_print
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:procal/services/delete_user_result.dart';
 import 'package:procal/services/firebase_firestore.dart';
 import 'package:procal/widgets/my_toast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -12,8 +13,17 @@ class AuthService {
   final FirestoreService _firestore = FirestoreService();
   final MyMoast toast = MyMoast();
 
+
+  // Get user id
+
+  String? getUserID() {
+    return FirebaseAuth.instance.currentUser?.uid;
+  }
+
+
   // Sign up With Email And Password
-  Future<void> createAccountWithEmailAndPassword(String email, String password, String username) async {
+
+  Future<User?> createAccountWithEmailAndPassword(String email, String password, String username) async {
     String errorMessage;
 
     try {
@@ -29,7 +39,7 @@ class AuthService {
           userCredential.user!.uid,
         );
       }
-      print('Logged in anonymously as: ${userCredential.user?.uid}');
+      return userCredential.user;
     } on FirebaseAuthException catch (e) {
       switch(e.code) {
         case 'weak-password':
@@ -48,18 +58,22 @@ class AuthService {
           errorMessage = 'Too many attempts. Please try again later';
         break;
         default:
-          errorMessage = 'Something went wrong. Please try again';
+          errorMessage = 'Something went wrong';
           print(e.message);
         break;
       }
-      toast.show(errorMessage);
     } catch (e) {
       print(e.toString());
-    } 
+      errorMessage = 'Something went wrong';
+    }
+    toast.show(errorMessage);
+    return null; 
   }
 
+
   // Log in With Email And Password
-  Future<void> signInWithEmailAndPassword(String email, String password) async {
+
+  Future<User?> signInWithEmailAndPassword(String email, String password) async {
     String errorMessage = '';
 
     try {
@@ -69,7 +83,7 @@ class AuthService {
       );
       toast.show('Welcome back!');
       print('Logged in anonymously as: ${userCredential.user?.uid}');
-      // return userCredential.user;
+      return userCredential.user;
     } on FirebaseAuthException catch (e) {
       switch(e.code) {
         case 'user-not-found':
@@ -94,32 +108,38 @@ class AuthService {
           errorMessage = 'Invalid email or password';
         break;
         default:
-          'Something went wrong. Please try again';
+          errorMessage = 'Something went wrong';
           print(e.message);
         break;
       }
-      toast.show(errorMessage);
     } catch (e) {
-      print(e);
+      print(e.toString());
+      errorMessage = 'Something went wrong';
     }
+    toast.show(errorMessage);
+    return null;
   }
 
 
   // Anonymous sign in 
-  Future<void> signInAnon() async {
+
+  Future<User?> signInAnon() async {
     try {
       UserCredential userCredential = await _auth.signInAnonymously();
       toast.show('Logged in successfuly!');
       print('Logged in anonymously as: ${userCredential.user?.uid}');
+      return userCredential.user;
     } on FirebaseAuthException {
       toast.show('Something went wrong. Please try again');
     } catch (e) {
       print(e.toString());
     }
+    return null;
   }
 
   
   // Upgrade an anonymous account to a permanent account
+  
   Future<void> upgradeAccountFromAnonToPermenant(String email, String password, String username) async {
     String er = '';
 
@@ -177,25 +197,24 @@ class AuthService {
 
 
   // Google sign in
-  Future<void> signInWithGoogle() async {
-    // Trigger the authentication flow
+
+  Future<User?> signInWithGoogle() async {
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-    // Obtain the auth details from the request
     final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
 
-    // Create a new credential
     final credential = GoogleAuthProvider.credential(
       accessToken: googleAuth?.accessToken,
       idToken: googleAuth?.idToken,
     );
 
     try {
-      await FirebaseAuth.instance.signInWithCredential(credential);
+      UserCredential cred = await FirebaseAuth.instance.signInWithCredential(credential);
+      return cred.user;
     } catch (e) {
       print(e.toString());
     }
-    
+    return null;
   }
 
 
@@ -222,6 +241,7 @@ class AuthService {
 
 
   // Sign out
+
   Future<void> signOut() async {
     try {
       await _auth.signOut();
@@ -234,33 +254,57 @@ class AuthService {
     }
   }
 
-  
-  Future<int?> deleteUserAccount() async {
-    FirebaseAuth.instance.currentUser!.reload();
-    try {
-      await FirebaseAuth.instance.currentUser!.delete();
-      toast.show('Account has been deleted successfuly');
-      return 1;
-    } on FirebaseAuthException catch(e) {
-      if (e.code == 'requires-recent-login') {
-        print('The user must reauthenticate before this operation can be executed.');
-        return 0;
-      } 
-      else if (e.code == 'network-request-failed') {
-        toast.show('No internet connection');
+
+  // Delete the user
+
+  Future<DeleteUserResult?> deleteUserAccount() async {
+    String? errorMessage;
+    final User? user = _auth.currentUser;
+
+    if(user != null) {
+
+      DocumentSnapshot? userDetailsBackup = await _firestore.getUser(user.uid);
+
+      user.reload();
+      try {
+        await _firestore.deleteUser(user.uid); // Delete user details
+        await user.delete(); // Then delete user authentication
+        toast.show('Account has been deleted successfuly');
+        return DeleteUserResult(isSuccessful: true);
+      } on FirebaseAuthException catch(e) {
+        if (e.code == 'requires-recent-login') {
+          print('The user must reauthenticate before this operation can be executed.');
+          errorMessage = 'You must re-log in before deleting your account';
+        } 
+        else if (e.code == 'network-request-failed') {
+          //toast.show('No internet connection');
+          print('No internet connection');
+          errorMessage = 'No internet connection';
+        }
+        else {
+          //toast.show('Something went wrong. Please try again');
+          print(e.message);
+          errorMessage = 'Something went wrong';
+        }
+      } catch (e) {
+        print(e.toString());
+        errorMessage = 'Something went wrong';
       }
-      else {
-        toast.show('Something went wrong. Please try again');
-        print(e.message);
-      }
-    } catch (e) {
-      print(e.toString());
+
+      _firestore.addUserFromDoc(userDetailsBackup, user.uid);  // Restore user details again
+
+      return DeleteUserResult(isSuccessful: false, errorMessage: errorMessage);
     }
+    
+    print('Failed to delete account because user is not authenticated');
     return null;
   }
 
 
-  Future<void> reauthenticate(String email, String password) async {
+  
+
+
+  Future<User?> reauthenticate(String email, String password) async {
     String errorMessage = '';
 
     User? user = FirebaseAuth.instance.currentUser;
@@ -273,26 +317,26 @@ class AuthService {
       if(user != null) {
         UserCredential newUserCredential = await user.reauthenticateWithCredential(credential);
         // The reauthentication succeeded
-        // return true;
+        return newUserCredential.user;
 
-        if(newUserCredential.user != null) {
-          user.reload();
-          // Deletes user again
-          _firestore.deleteUser(user.uid);  // THIS HAS TO BE FIRST
-          deleteUserAccount();
+        // if(newUserCredential.user != null) {
+        //   user.reload();
+        //   // Deletes user again
+        //   _firestore.deleteUser(user.uid);  // THIS HAS TO BE FIRST
+        //   deleteUserAccount();
           
-          user = FirebaseAuth.instance.currentUser;
+        //   user = FirebaseAuth.instance.currentUser;
 
-          if(user != null) {
-            // The user still exists 
-            int addSign = email.indexOf('@');
-            String restoredUsername = email.substring(0, addSign);
-            _firestore.addUser(email, restoredUsername, user.uid);
-          }
-          else {
-            print('User deleted perminantly');
-          }
-        }
+        //   if(user != null) {
+        //     // The user still exists 
+        //     int addSign = email.indexOf('@');
+        //     String restoredUsername = email.substring(0, addSign);
+        //     _firestore.addUser(email, restoredUsername, user.uid);
+        //   }
+        //   else {
+        //     print('User deleted perminantly');
+        //   }
+        // }
       }
     } on FirebaseAuthException catch(e) {
       switch(e.code) {
@@ -321,7 +365,7 @@ class AuthService {
     catch(e) {
       print(e);
     }
-    // return false;
+    return null;
   }
 
 
