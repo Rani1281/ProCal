@@ -5,6 +5,7 @@ import 'package:procal/services/delete_user_result.dart';
 import 'package:procal/services/firebase_auth.dart';
 import 'package:procal/services/firebase_firestore.dart';
 import 'package:procal/widgets/auth_page_design.dart';
+import 'package:procal/widgets/my_toast.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,12 +18,14 @@ class _HomePageState extends State<HomePage> {
 
   final AuthService _auth = AuthService();
   final User? user = FirebaseAuth.instance.currentUser;
+  final MyToast toast = MyToast();
 
 
   Future<void> deleteUser() async {
     if(user != null){
       DeleteUserResult? result = await _auth.deleteUserAccount();
       if(result != null) {
+        toast.show(result.errorMessage!);
         if(result.isSuccessful == false) {
           // Navigate to re-login page
           Navigator.push(
@@ -34,7 +37,7 @@ class _HomePageState extends State<HomePage> {
       }
     }
   }
-  
+
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +57,10 @@ class _HomePageState extends State<HomePage> {
 
               // Log out button
               ElevatedButton(
-                onPressed: _auth.signOut,
+                onPressed: () {
+                  _auth.signOut();
+                  _auth.signOutGoogle();
+                },
                 child: const Text('Log Out')
               ),
               const SizedBox(height: 15),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-class MyMoast {
+class MyToast {
 
   void show(String msg) {
     // Map<types,Color> colors = {

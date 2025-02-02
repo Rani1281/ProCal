@@ -11,7 +11,8 @@ class AuthService {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirestoreService _firestore = FirestoreService();
-  final MyMoast toast = MyMoast();
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final MyToast toast = MyToast();
 
 
   // Get user id
@@ -199,13 +200,17 @@ class AuthService {
   // Google sign in
 
   Future<User?> signInWithGoogle() async {
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
-    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+    // User canceled the sign-in
+    if(googleUser == null) {
+      return null;
+    }
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
     final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
     );
 
     try {
@@ -243,15 +248,13 @@ class AuthService {
   // Sign out
 
   Future<void> signOut() async {
-    try {
-      await _auth.signOut();
-      if(isSignedInWithGoogle()) {
-        await GoogleSignIn().signOut();
-      }
-      toast.show('Signed out successfuly');
-    } catch (e) {
-      print(e);
-    }
+    await _auth.signOut();
+    toast.show('Signed out successfuly');
+  }
+
+  Future<void> signOutGoogle() async {
+    await GoogleSignIn().signOut();
+    toast.show('Signed out successfuly');
   }
 
 

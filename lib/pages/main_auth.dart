@@ -7,6 +7,7 @@ import 'package:procal/widgets/auth_page_design.dart';
 import 'package:procal/widgets/my_button.dart';
 import 'package:procal/widgets/my_text_field.dart';
 import 'package:procal/widgets/my_toast.dart';
+import 'package:sign_in_button/sign_in_button.dart';
 
 class MainAuthPage extends StatefulWidget {
   const MainAuthPage({required this.destination, super.key});
@@ -23,7 +24,7 @@ class MainAuthPageState extends State<MainAuthPage> {
   late Map<AuthPages, AuthPageDesign> authPages;
 
   final AuthService _auth = AuthService();
-  final MyMoast myToast = MyMoast();
+  final MyToast myToast = MyToast();
 
   final TextEditingController emailControler = TextEditingController();
   final TextEditingController passwordControler = TextEditingController();
@@ -188,40 +189,37 @@ class MainAuthPageState extends State<MainAuthPage> {
               ),
               const SizedBox(height: 20),
 
-              // Continue with google button
-              Row(
-                children: [
-                  SizedBox(
-                    height: 30,
-                    width: 30,
-                    child: Image.asset('assets/google-logo.png')
-                  ),
-                  // MyButton(
-                  //   text: 'Continue With Google',
-                  //   onPressed: _auth.signInWithGoogle,
-                  //   bgColor: Colors.white,
-                  //   textColor: Colors.black,
-                  // ),
-                  const SizedBox(width: 14),
+              SignInButton(Buttons.google, onPressed: _auth.signInWithGoogle),
 
-                  Expanded(
-                    child: SizedBox(
-                      height: 50,
-                      child: ElevatedButton.icon(
-                        onPressed: _auth.signInWithGoogle,
-                        label: const Text('Continue With Google'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black87,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20), // Adjust the radius as needed
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              // Continue with google button
+              // Row(
+              //   children: [
+              //     SizedBox(
+              //       height: 30,
+              //       width: 30,
+              //       child: Image.asset('assets/google-logo.png')
+              //     ),
+                  
+              //     const SizedBox(width: 14),
+
+              //     Expanded(
+              //       child: SizedBox(
+              //         height: 50,
+              //         child: ElevatedButton.icon(
+              //           onPressed: _auth.signInWithGoogle,
+              //           label: const Text('Continue With Google'),
+              //           style: ElevatedButton.styleFrom(
+              //             backgroundColor: Colors.white,
+              //             foregroundColor: Colors.black87,
+              //             shape: RoundedRectangleBorder(
+              //               borderRadius: BorderRadius.circular(20), // Adjust the radius as needed
+              //             ),
+              //           ),
+              //         ),
+              //       ),
+              //     ),
+              //   ],
+              // ),
 
               // ElevatedButton(
               //   onPressed: () => _auth.signInWithGoogle(),
