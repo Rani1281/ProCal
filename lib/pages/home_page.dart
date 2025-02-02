@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:procal/pages/main_auth.dart';
 import 'package:procal/services/delete_user_result.dart';
 import 'package:procal/services/firebase_auth.dart';
-import 'package:procal/services/firebase_firestore.dart';
 import 'package:procal/widgets/auth_page_design.dart';
 import 'package:procal/widgets/my_toast.dart';
 
