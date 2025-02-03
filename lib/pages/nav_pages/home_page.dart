@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:procal/pages/main_auth.dart';
+import 'package:procal/pages/auth_pages/main_auth.dart';
 import 'package:procal/services/delete_user_result.dart';
 import 'package:procal/services/firebase_auth.dart';
 import 'package:procal/widgets/auth_page_design.dart';
