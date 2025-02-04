@@ -2,8 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:procal/main_navigation.dart';
 import 'package:procal/pages/auth_pages/main_auth.dart';
-import 'package:procal/pages/nav_pages/home_page.dart';
+import 'package:procal/pages/nav_pages/home_page/main_home_page.dart';
 import 'package:procal/pages/auth_pages/verify_email_page.dart';
 import 'package:procal/widgets/auth_page_design.dart';
 import 'firebase_options.dart';
@@ -48,7 +49,7 @@ class _MyAppState extends State<MyApp> {
                 return const VerifyEmailPage();
               } 
             }
-            return const HomePage();   
+            return const MainNavigation();   
           } 
           // User is NOT signed in
           //return AuthPage(destination: 'sign-up');
