@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:procal/pages/nav_pages/explore_page/food_search_page.dart';
 import 'package:procal/pages/nav_pages/home_page/main_home_page.dart';
+import 'package:procal/pages/nav_pages/home_page/profile_page.dart';
 import 'package:procal/pages/nav_pages/progress_page/main_progress_page.dart';
 import 'package:procal/pages/nav_pages/schedule_page/main_schedule_page.dart';
 
@@ -12,14 +13,13 @@ class MainNavigation extends StatefulWidget {
 }
 
 class _MainNavigationState extends State<MainNavigation> {
-
   int currentPageIndex = 0;
 
   final Map<int, Widget> pages = {
-    0 : const HomePage(),
-    1 : const FoodSearchPage(),
-    2 : const SchedulePage(),
-    3 : const ProgressPage(),
+    0: const HomePage(),
+    1: const FoodSearchPage(),
+    2: const SchedulePage(),
+    3: const ProgressPage(),
   };
 
   final List<Widget> myDestinations = const [
@@ -33,15 +33,24 @@ class _MainNavigationState extends State<MainNavigation> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('PROCAL'),
-        centerTitle: true,
-        actions: const [
-          Icon(Icons.search)
-        ],
-        leading: const Icon(Icons.account_circle),
-      ),
+          title: const Text('PROCAL'),
+          centerTitle: true,
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const FoodSearchPage()));
+                },
+                icon: Icon(Icons.search))
+          ],
+          leading: IconButton(
+            onPressed: () => Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const ProfilePage())),
+            icon: Icon(Icons.account_circle),
+          )),
       body: pages[currentPageIndex],
-
       bottomNavigationBar: NavigationBar(
         destinations: myDestinations,
         onDestinationSelected: (selectedIndex) {

@@ -17,7 +17,6 @@ class MainAuthPage extends StatefulWidget {
 }
 
 class MainAuthPageState extends State<MainAuthPage> {
-
   late AuthPages destination;
   late Map<AuthPages, AuthPageDesign> authPages;
 
@@ -27,7 +26,7 @@ class MainAuthPageState extends State<MainAuthPage> {
   final TextEditingController emailControler = TextEditingController();
   final TextEditingController passwordControler = TextEditingController();
   final TextEditingController usernameControler = TextEditingController();
-  
+
   late String email;
   late String password;
   late String username;
@@ -40,28 +39,30 @@ class MainAuthPageState extends State<MainAuthPage> {
     destination = widget.destination;
 
     authPages = {
-      AuthPages.signUp : AuthPageDesign(
+      AuthPages.signUp: AuthPageDesign(
         title: 'Sign Up',
-        onPressed: () async => await _auth.createAccountWithEmailAndPassword(email, password, username),
+        onPressed: () async => await _auth.createAccountWithEmailAndPassword(
+            email, password, username),
         buttonText: 'Create Account',
         bottomText: 'Already have an account? Log In',
         bottomTextDestination: AuthPages.logIn,
       ),
-      AuthPages.logIn : AuthPageDesign(
+      AuthPages.logIn: AuthPageDesign(
         title: 'Log In',
-        onPressed: () async => await _auth.signInWithEmailAndPassword(email, password),
+        onPressed: () async =>
+            await _auth.signInWithEmailAndPassword(email, password),
         buttonText: 'Log In',
         bottomText: "Don't have an account? Sign Up",
         bottomTextDestination: AuthPages.signUp,
       ),
-      AuthPages.reAuth : AuthPageDesign(
-        title: 'Re-Log',
-        onPressed: () async => await _auth.reauthenticate(email, password),
-        buttonText: 'Re-Log'
-      ),
-      AuthPages.upgrade : AuthPageDesign(
+      AuthPages.reAuth: AuthPageDesign(
+          title: 'Re-Log',
+          onPressed: () async => await _auth.reauthenticate(email, password),
+          buttonText: 'Re-Log'),
+      AuthPages.upgrade: AuthPageDesign(
         title: 'Upgrade Account',
-        onPressed: () => _auth.upgradeAccountFromAnonToPermenant(email, password, username),
+        onPressed: () =>
+            _auth.upgradeAccountFromAnonToPermenant(email, password, username),
         buttonText: 'Upgrade Account',
       ),
     };
@@ -81,23 +82,24 @@ class MainAuthPageState extends State<MainAuthPage> {
           padding: const EdgeInsets.all(15.0),
           child: Column(
             children: [
-        
               destination == AuthPages.signUp
-              ? Column(
-                children: [
-                  // Username field
-                  MyTextField(controller: usernameControler, hintText: 'Username'),
-                  // TextField(
-                  //   controller: usernameControler,
-                  //   decoration: const InputDecoration(
-                  //     label: Text('Username'),
-                  //   ),
-                  // ),
-                  const SizedBox(height: 15)
-                ],
-              )
-              : const SizedBox(),
-        
+                  ? Column(
+                      children: [
+                        // Username field
+                        MyTextField(
+                            controller: usernameControler,
+                            hintText: 'Username'),
+                        // TextField(
+                        //   controller: usernameControler,
+                        //   decoration: const InputDecoration(
+                        //     label: Text('Username'),
+                        //   ),
+                        // ),
+                        const SizedBox(height: 15)
+                      ],
+                    )
+                  : const SizedBox(),
+
               // Email field
               MyTextField(controller: emailControler, hintText: 'Email'),
 
@@ -109,22 +111,21 @@ class MainAuthPageState extends State<MainAuthPage> {
               //   ),
               // ),
               const SizedBox(height: 15),
-        
+
               // Password field
               MyTextField(
                 controller: passwordControler,
                 hintText: 'Password',
                 hidePassword: isSecured,
-                suffixIcon: IconButton(
-                  icon: isSecured
-                    ? const Icon(Icons.visibility_off)
-                    : const Icon(Icons.visibility),
-                  onPressed: () {
-                    setState(() {
-                      isSecured = !isSecured;
-                    });
-                  }
-                ),
+                endIcon: IconButton(
+                    icon: isSecured
+                        ? const Icon(Icons.visibility_off)
+                        : const Icon(Icons.visibility),
+                    onPressed: () {
+                      setState(() {
+                        isSecured = !isSecured;
+                      });
+                    }),
               ),
               // TextField(
               //   obscureText: isSecured,
@@ -142,36 +143,35 @@ class MainAuthPageState extends State<MainAuthPage> {
               //           }),
               //     )),
               const SizedBox(height: 15),
-        
+
               // Submit button
               MyButton(
                 text: thisPage.buttonText,
                 onPressed: () {
-                  if(formIsFilled()) {
+                  if (formIsFilled()) {
                     // Activate this page's function
                     thisPage.onPressed();
-                  }
-                  else {
-                    myToast.show('Please fill all the fields before continuing');
+                  } else {
+                    myToast
+                        .show('Please fill all the fields before continuing');
                   }
                 },
               ),
-              
+
               // Have an account
               const SizedBox(height: 20),
-        
+
               // Bottom text
               thisPage.bottomTextDestination != null
-              ? InkWell(
-                  onTap: () {
-                    setState(() {
-                      destination = thisPage.bottomTextDestination!;
-                    });
-                  },
-                  child: Text(thisPage.bottomText!)
-                )
-              : const SizedBox(),
-        
+                  ? InkWell(
+                      onTap: () {
+                        setState(() {
+                          destination = thisPage.bottomTextDestination!;
+                        });
+                      },
+                      child: Text(thisPage.bottomText!))
+                  : const SizedBox(),
+
               const SizedBox(height: 15),
 
               // OR
@@ -182,7 +182,8 @@ class MainAuthPageState extends State<MainAuthPage> {
                   const SizedBox(width: 3),
                   const Text('OR'),
                   const SizedBox(width: 3),
-                  Expanded(child: Container(height: 1, color: Colors.grey[600])),              
+                  Expanded(
+                      child: Container(height: 1, color: Colors.grey[600])),
                 ],
               ),
               const SizedBox(height: 20),
@@ -197,7 +198,7 @@ class MainAuthPageState extends State<MainAuthPage> {
               //       width: 30,
               //       child: Image.asset('assets/google-logo.png')
               //     ),
-                  
+
               //     const SizedBox(width: 14),
 
               //     Expanded(
@@ -234,7 +235,7 @@ class MainAuthPageState extends State<MainAuthPage> {
               //   ),
 
               // ),
-        
+
               const SizedBox(height: 8),
 
               // Anonimously button
@@ -261,11 +262,11 @@ class MainAuthPageState extends State<MainAuthPage> {
       password = passwordControler.text.trim();
       username = usernameControler.text.trim();
     });
-    if(email != '' && password != '') {
+    if (email != '' && password != '') {
       // Email & password are not null
-      if(destination == AuthPages.signUp) {
+      if (destination == AuthPages.signUp) {
         // It is sign up page
-        if(username != '') {
+        if (username != '') {
           // Then also check username
           return true;
         }
@@ -279,8 +280,8 @@ class MainAuthPageState extends State<MainAuthPage> {
 
   bool isNotAnon() {
     User? user = FirebaseAuth.instance.currentUser;
-    if(user != null) {
-      if(user.isAnonymous) {
+    if (user != null) {
+      if (user.isAnonymous) {
         return false;
       }
     }
