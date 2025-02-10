@@ -1,6 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:procal/widgets/my_text_field.dart';
+import 'package:flutter/foundation.dart';
+
+import 'dart:convert';
+import 'package:flutter/services.dart' show rootBundle;
 
 class FoodSearchPage extends StatefulWidget {
   const FoodSearchPage({super.key});
@@ -10,7 +14,6 @@ class FoodSearchPage extends StatefulWidget {
 }
 
 class _FoodSearchPageState extends State<FoodSearchPage> {
-  final List _foods = ['Egg', 'Pizza', 'Pasta'];
   final TextEditingController _foodSearchController = TextEditingController();
 
   @override
@@ -34,23 +37,6 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
             // Text field (search food)
 
             // List
-            Expanded(
-              child: ListView.builder(
-                  itemCount: _foods.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 5.0),
-                      child: ListTile(
-                        title: Text(_foods[index]),
-                        subtitle: Text('86 calories, 6.2g protein'),
-                        tileColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                        ),
-                      ),
-                    );
-                  }),
-            )
           ],
         ),
       ),

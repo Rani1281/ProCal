@@ -14,29 +14,26 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   final AuthService _auth = AuthService();
   final User? user = FirebaseAuth.instance.currentUser;
   final MyToast toast = MyToast();
 
-
   Future<void> deleteUser() async {
-    if(user != null){
+    if (user != null) {
       DeleteUserResult? result = await _auth.deleteUserAccount();
-      if(result != null) {
+      if (result != null) {
         toast.show(result.errorMessage!);
-        if(result.isSuccessful == false) {
+        if (result.isSuccessful == false) {
           // Navigate to re-login page
           Navigator.push(
-            context, MaterialPageRoute(
-              builder: (context) => const MainAuthPage(destination: AuthPages.reAuth)
-            )
-          );
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      const MainAuthPage(destination: AuthPages.reAuth)));
         }
       }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -47,24 +44,23 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("Welcome To PROCAL ! ${FirebaseAuth.instance.currentUser!.displayName}"),
+              Text(
+                  "Welcome To PROCAL ! ${FirebaseAuth.instance.currentUser!.displayName}"),
               const SizedBox(height: 15),
 
               // Log out button
               ElevatedButton(
-                onPressed: () {
-                  _auth.signOut();
-                  _auth.signOutGoogle();
-                },
-                child: const Text('Log Out')
-              ),
+                  onPressed: () {
+                    _auth.signOut();
+                    _auth.signOutGoogle();
+                  },
+                  child: const Text('Log Out')),
               const SizedBox(height: 15),
 
               // Delete account button
               ElevatedButton(
-                onPressed: () => deleteUser(),
-                child: const Text('Delete Account')
-              ),
+                  onPressed: () => deleteUser(),
+                  child: const Text('Delete Account')),
 
               // Upgrade account button (in anon)
               // isAnon()
@@ -73,7 +69,6 @@ class _HomePageState extends State<HomePage> {
               //   child: const Text('Upgrade Account')
               // )
               // : const SizedBox(),
-
             ],
           ),
         ),
@@ -87,6 +82,4 @@ class _HomePageState extends State<HomePage> {
     }
     return false;
   }
-
-  
 }
