@@ -7,13 +7,15 @@ class MyTextField extends StatelessWidget {
       required this.hintText,
       this.hidePassword,
       this.endIcon,
-      this.sumbitType});
+      this.sumbitType,
+      this.onSubmitted});
 
   final TextEditingController controller;
   final String hintText;
   final bool? hidePassword;
   final Widget? endIcon;
   final TextInputAction? sumbitType;
+  final void Function(String)? onSubmitted;
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +34,8 @@ class MyTextField extends StatelessWidget {
       ),
       obscureText: hidePassword ?? false,
       textInputAction: sumbitType ?? TextInputAction.done,
+
+      onSubmitted: onSubmitted,
     );
   }
 }
