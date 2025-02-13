@@ -57,31 +57,31 @@ class FirestoreService {
   }
 
   // Get foods in firestore from a search parameter
-  Future<List<Map<String,dynamic>>> searchFood(String? searchStr) async {
+  Future<List<Map<String,dynamic>>> searchFood(String searchStr) async {
     final foodsCollection = _firestore.collection('foods');
-    if(searchStr != null) {
-      // QuerySnapshot querySnapshot = await foodsCollection
-      // .where('description'.toLowerCase(), isGreaterThanOrEqualTo: searchStr)
-      // .where('description'.toLowerCase(), isLessThan: searchStr + 'z')
-      // .limit(20)
-      // .get();
+    
+    // QuerySnapshot querySnapshot = await foodsCollection
+    // .where('description'.toLowerCase(), isGreaterThanOrEqualTo: searchStr)
+    // .where('description'.toLowerCase(), isLessThan: searchStr + 'z')
+    // .limit(20)
+    // .get();
 
-      //return querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+    //return querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
 
-      QuerySnapshot querySnapshot = await foodsCollection.get();
+    QuerySnapshot querySnapshot = await foodsCollection.get();
+    
+    return querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>)
+      .where((food) {
+        String foodName = (food['description'] ?? 'Empty');
+        foodName = foodName.toLowerCase();
+        return foodName.contains(searchStr.toLowerCase());
+      }).toList();
+    
+    
+    // QuerySnapshot querySnapshot = await foodsCollection.limit(20).get();
       
-      return querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>)
-        .where((food) {
-          String foodName = (food['description']);
-          foodName = foodName.toLowerCase();
-          return foodName.contains(searchStr.toLowerCase());
-        }).toList();
-    }
-    else {
-      QuerySnapshot querySnapshot = await foodsCollection.limit(20).get();
-      
-      return querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
-    }
+    // return querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+    
     
   }
 }

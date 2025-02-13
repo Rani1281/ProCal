@@ -23,27 +23,26 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
   List<Map<String, dynamic>>? foods;
 
   bool isLoading = false;
+  bool isNotEmpty = false;
   
 
-  Future<void> search(searchStr) async {
-    setState(() {
-      isLoading = true;
-    });
-    final results = await _firestore.searchFood(searchStr);
-    setState(() {
-      foods = results;
-      isLoading = false;
-    });
-    
-  } 
-
-  @override
-  void initState() {
-    super.initState();
-    setState(() {
-      isLoading = true;
-    });
-    search(null);
+  Future<void> search(String searchStr) async {
+    if(searchStr != '') {
+      setState(() {
+        isNotEmpty = true;
+        isLoading = true;
+      });
+      final results = await _firestore.searchFood(searchStr)
+      .then((value) {
+        print('Search was successful!');
+        return value;
+      });
+      setState(() {
+        foods = results;
+        isLoading = false;
+      });
+    }
+    // Display the logging history
   }
 
   @override
@@ -51,8 +50,6 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        // titleSpacing:
-        //     0, // Decrease the spacing between the back icon and the title
         title: MyTextField(
           controller: _foodSearchController,
           hintText: 'Search a food...',
@@ -61,28 +58,54 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
           onSubmitted: (input) {
             print('Submitted!');
             search(input);
-
-          } ,
+          },
         ),
       ),
       body: Padding(
-        padding: EdgeInsets.all(15),
+        padding: const EdgeInsets.all(15),
         child: Column(
           children: [
             // List
-            isLoading
-            ? CircularProgressIndicator()
-            : Expanded(
-                child: ListView.builder(
-                  itemCount: foods!.length,
-                  itemBuilder: (context, i) {
-                    return ListTile(
-                      title: Text(foods![i]['description']) ,
-                      subtitle: Text('Subtile'),
-                    );
-                  },
+            isNotEmpty
+            ?  isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : Expanded(
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Search results', style: TextStyle(fontWeight: FontWeight.bold),),
+                        Text(foods?.length.toString() ?? '0')
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: foods?.length ?? 0,
+                        itemBuilder: (context, i) {
+                          final food = foods?[i];
+                          final description = food?['description'] ?? 'No description';
+                          final category = food?['foodCategory']?['description'] ?? 'Other foods';
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 5),
+                            child: ListTile(
+                              title: Text(description),
+                              subtitle: Text(category),
+                              tileColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.0),
+                              ),
+                              trailing: const Icon(Icons.add),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-              ),
+              )
+            : const Text('Search a food')
           ],
         ),
       ),
