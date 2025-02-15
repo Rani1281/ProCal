@@ -7,8 +7,8 @@ import 'package:procal/pages/auth_pages/main_auth.dart';
 import 'package:procal/services/delete_user_result.dart';
 import 'package:procal/services/firebase_auth.dart';
 import 'package:procal/services/firebase_firestore.dart';
-import 'package:procal/widgets/auth_page_design.dart';
-import 'package:procal/widgets/my_toast.dart';
+import 'package:procal/models/auth_page_design.dart';
+import 'package:procal/models/my_toast.dart';
 
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
@@ -43,33 +43,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  // Future<void> uploadJsonToFirestore() async {
-
-  //   final foodCollection = FirebaseFirestore.instance.collection('foods');
-
-  //   if(user != null) {
-  //     print('The user is authenticated');
-  //   } else {
-  //     print('The user is not authenticated');
-  //   }
-
-  //   try {
-  //     String jsonString = await rootBundle.loadString('assets/foundationDownload.json');
-  //     final Map<String, dynamic> jsonData = json.decode(jsonString);
-
-  //     // Extract the list of foods
-  //     final List<dynamic> foodList = jsonData["FoundationFoods"];
-
-  //     for (var food in foodList) {
-  //       await foodCollection.add(food);
-  //     }
-
-  //     print("Uploaded successfuly!");
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,6 +55,8 @@ class _HomePageState extends State<HomePage> {
               Text(
                   "Welcome To PROCAL ! ${FirebaseAuth.instance.currentUser!.displayName}"),
               const SizedBox(height: 15),
+
+
             ],
           ),
         ),

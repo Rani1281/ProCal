@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:procal/services/firebase_firestore.dart';
-import 'package:procal/widgets/my_text_field.dart';
+import 'package:procal/models/my_text_field.dart';
 import 'package:flutter/foundation.dart';
 
 import 'dart:convert';

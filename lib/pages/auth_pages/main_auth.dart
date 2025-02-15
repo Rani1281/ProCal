@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:procal/services/firebase_auth.dart';
-import 'package:procal/widgets/auth_page_design.dart';
-import 'package:procal/widgets/my_button.dart';
-import 'package:procal/widgets/my_text_field.dart';
-import 'package:procal/widgets/my_toast.dart';
+import 'package:procal/models/auth_page_design.dart';
+import 'package:procal/models/my_button.dart';
+import 'package:procal/models/my_text_field.dart';
+import 'package:procal/models/my_toast.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 
 class MainAuthPage extends StatefulWidget {

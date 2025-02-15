@@ -6,7 +6,7 @@ import 'package:procal/main_navigation.dart';
 import 'package:procal/pages/auth_pages/main_auth.dart';
 import 'package:procal/pages/nav_pages/home_page/main_home_page.dart';
 import 'package:procal/pages/auth_pages/verify_email_page.dart';
-import 'package:procal/widgets/auth_page_design.dart';
+import 'package:procal/models/auth_page_design.dart';
 import 'firebase_options.dart';
 
 void main() async {

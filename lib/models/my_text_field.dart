@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 
 class MyTextField extends StatelessWidget {
   const MyTextField(
-      {super.key,
-      required this.controller,
-      required this.hintText,
-      this.hidePassword,
-      this.endIcon,
-      this.sumbitType,
-      this.onSubmitted});
+  {
+    super.key,
+    required this.controller,
+    required this.hintText,
+    this.hidePassword,
+    this.endIcon,
+    this.sumbitType,
+    this.onSubmitted,
+    this.onTap
+  });
 
   final TextEditingController controller;
   final String hintText;
@@ -16,6 +19,7 @@ class MyTextField extends StatelessWidget {
   final Widget? endIcon;
   final TextInputAction? sumbitType;
   final void Function(String)? onSubmitted;
+  final void Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +40,7 @@ class MyTextField extends StatelessWidget {
       textInputAction: sumbitType ?? TextInputAction.done,
 
       onSubmitted: onSubmitted,
+      onTap: onTap,
     );
   }
 }

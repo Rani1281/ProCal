@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:procal/pages/nav_pages/explore_page/food_search_page.dart';
+import 'package:procal/pages/nav_pages/search_pages/food_search_page.dart';
+import 'package:procal/pages/nav_pages/search_pages/main_explore_page.dart';
 import 'package:procal/pages/nav_pages/home_page/main_home_page.dart';
 import 'package:procal/pages/nav_pages/home_page/profile_page.dart';
 import 'package:procal/pages/nav_pages/progress_page/main_progress_page.dart';
@@ -17,14 +18,14 @@ class _MainNavigationState extends State<MainNavigation> {
 
   final Map<int, Widget> pages = {
     0: const HomePage(),
-    1: const FoodSearchPage(),
+    1: const ExplorePage(),
     2: const SchedulePage(),
     3: const ProgressPage(),
   };
 
   final List<Widget> myDestinations = const [
     NavigationDestination(icon: Icon(Icons.home_outlined), label: 'Home'),
-    NavigationDestination(icon: Icon(Icons.search), label: 'Search'),
+    NavigationDestination(icon: Icon(Icons.explore_outlined), label: 'Explore'),
     NavigationDestination(icon: Icon(Icons.list_alt), label: 'Schedule'),
     NavigationDestination(icon: Icon(Icons.trending_up), label: 'Progress'),
   ];

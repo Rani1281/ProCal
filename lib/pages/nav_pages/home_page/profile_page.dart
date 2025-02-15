@@ -5,8 +5,8 @@ import 'package:procal/pages/auth_pages/main_auth.dart';
 import 'package:procal/services/delete_user_result.dart';
 import 'package:procal/services/firebase_auth.dart';
 import 'package:procal/services/firebase_firestore.dart';
-import 'package:procal/widgets/auth_page_design.dart';
-import 'package:procal/widgets/my_toast.dart';
+import 'package:procal/models/auth_page_design.dart';
+import 'package:procal/models/my_toast.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});

@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
+import 'package:procal/models/food_catagory_item.dart';
 
 class FirestoreService {
 
@@ -59,14 +61,6 @@ class FirestoreService {
   // Get foods in firestore from a search parameter
   Future<List<Map<String,dynamic>>> searchFood(String searchStr) async {
     final foodsCollection = _firestore.collection('foods');
-    
-    // QuerySnapshot querySnapshot = await foodsCollection
-    // .where('description'.toLowerCase(), isGreaterThanOrEqualTo: searchStr)
-    // .where('description'.toLowerCase(), isLessThan: searchStr + 'z')
-    // .limit(20)
-    // .get();
-
-    //return querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
 
     QuerySnapshot querySnapshot = await foodsCollection.get();
     
@@ -76,12 +70,50 @@ class FirestoreService {
         foodName = foodName.toLowerCase();
         return foodName.contains(searchStr.toLowerCase());
       }).toList();
-    
-    
-    // QuerySnapshot querySnapshot = await foodsCollection.limit(20).get();
-      
-    // return querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
-    
-    
+  }
+
+  // Future<void> uploadJsonToFirestore() async {
+
+  //   final foodCollection = FirebaseFirestore.instance.collection('foods');
+
+  //   if(user != null) {
+  //     print('The user is authenticated');
+  //   } else {
+  //     print('The user is not authenticated');
+  //   }
+
+  //   try {
+  //     String jsonString = await rootBundle.loadString('assets/foundationDownload.json');
+  //     final Map<String, dynamic> jsonData = json.decode(jsonString);
+
+  //     // Extract the list of foods
+  //     final List<dynamic> foodList = jsonData["FoundationFoods"];
+
+  //     for (var food in foodList) {
+  //       await foodCollection.add(food);
+  //     }
+
+  //     print("Uploaded successfuly!");
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
+
+  void printAllCategories() async {
+    List<String> allCategories = [];
+    _firestore.collection("foods").get().then(
+      (querySnapshot) {
+        print('GOT ALL DOCS!');
+        for(var docSnapshot in querySnapshot.docs) {
+          final doc = docSnapshot.data();
+          final categoryName = doc['foodCategory']?['description'];
+          if (!allCategories.contains(categoryName) && categoryName != null) {
+            allCategories.add(categoryName);
+            print(categoryName);
+          }
+        }
+      },
+      onError: (e) => print("Error completing: $e")
+    );
   }
 }
