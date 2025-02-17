@@ -16,12 +16,12 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
   int currentPageIndex = 0;
 
-  final Map<int, Widget> pages = {
-    0: const HomePage(),
-    1: const ExplorePage(),
-    2: const SchedulePage(),
-    3: const ProgressPage(),
-  };
+  final List pages = [
+    const HomePage(),
+    const ExplorePage(),
+    const SchedulePage(),
+    const ProgressPage(),
+  ];
 
   final List<Widget> myDestinations = const [
     NavigationDestination(icon: Icon(Icons.home_outlined), label: 'Home'),
@@ -47,8 +47,7 @@ class _MainNavigationState extends State<MainNavigation> {
                 icon: Icon(Icons.search))
           ],
           leading: IconButton(
-            onPressed: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const ProfilePage())),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfilePage())),
             icon: Icon(Icons.account_circle),
           )),
       body: pages[currentPageIndex],

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
-import 'package:procal/models/food_catagory_item.dart';
+import 'package:procal/components/food_catagory_item.dart';
 
 class FirestoreService {
 

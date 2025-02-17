@@ -3,7 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 class MyToast {
 
-  void show(String msg) {
+  static void show(String msg) {
     // Map<types,Color> colors = {
     //   types.message : Colors.lightBlue,
     //   types.error : Colors.red,
@@ -11,7 +11,6 @@ class MyToast {
     //   types.success : Colors.lightGreen,
     // };
     
-
     Fluttertoast.showToast(
       msg: msg,
       gravity: ToastGravity.CENTER,

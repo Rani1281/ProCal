@@ -2,7 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:procal/services/delete_user_result.dart';
+import 'package:procal/models/delete_user_result.dart';
 import 'package:procal/services/firebase_firestore.dart';
 import 'package:procal/models/my_toast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -67,7 +67,7 @@ class AuthService {
       print(e.toString());
       errorMessage = 'Something went wrong';
     }
-    toast.show(errorMessage);
+    MyToast.show(errorMessage);
     return null; 
   }
 
@@ -82,7 +82,7 @@ class AuthService {
         email: email,
         password: password
       );
-      toast.show('Welcome back!');
+      MyToast.show('Welcome back!');
       print('Logged in anonymously as: ${userCredential.user?.uid}');
       return userCredential.user;
     } on FirebaseAuthException catch (e) {
@@ -117,7 +117,7 @@ class AuthService {
       print(e.toString());
       errorMessage = 'Something went wrong';
     }
-    toast.show(errorMessage);
+    MyToast.show(errorMessage);
     return null;
   }
 
@@ -127,11 +127,11 @@ class AuthService {
   Future<User?> signInAnon() async {
     try {
       UserCredential userCredential = await _auth.signInAnonymously();
-      toast.show('Logged in successfuly!');
+      MyToast.show('Logged in successfuly!');
       print('Logged in anonymously as: ${userCredential.user?.uid}');
       return userCredential.user;
     } on FirebaseAuthException {
-      toast.show('Something went wrong. Please try again');
+      MyToast.show('Something went wrong. Please try again');
     } catch (e) {
       print(e.toString());
     }
@@ -189,7 +189,7 @@ class AuthService {
           print(e.message);
         break;
       }
-      toast.show(er);
+      MyToast.show(er);
     } catch (e) {
       print(e.toString());
     }
@@ -249,12 +249,12 @@ class AuthService {
 
   Future<void> signOut() async {
     await _auth.signOut();
-    toast.show('Signed out successfuly');
+    MyToast.show('Signed out successfuly');
   }
 
   Future<void> signOutGoogle() async {
     await GoogleSignIn().signOut();
-    toast.show('Signed out successfuly');
+    MyToast.show('Signed out successfuly');
   }
 
 
@@ -272,7 +272,7 @@ class AuthService {
       try {
         await _firestore.deleteUser(user.uid); // Delete user details
         await user.delete(); // Then delete user authentication
-        toast.show('Account has been deleted successfuly');
+        MyToast.show('Account has been deleted successfuly');
         return DeleteUserResult(isSuccessful: true);
       } on FirebaseAuthException catch(e) {
         if (e.code == 'requires-recent-login') {
@@ -363,7 +363,7 @@ class AuthService {
         print(e.message);
         break;
       }
-      toast.show(errorMessage);
+      MyToast.show(errorMessage);
     }
     catch(e) {
       print(e);

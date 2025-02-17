@@ -32,6 +32,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'PROCAL',
       home: StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),
@@ -59,35 +60,5 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
-
-
-// class AuthStateListener extends StatefulWidget {
-//   const AuthStateListener({super.key});
-
-//   @override
-//   State<AuthStateListener> createState() => _AuthStateListenerState();
-// }
-
-// class _AuthStateListenerState extends State<AuthStateListener> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return StreamBuilder<User?>(
-//     stream: FirebaseAuth.instance.idTokenChanges(),
-//     builder: (context, snapshot) {
-//         if (snapshot.connectionState == ConnectionState.waiting) {
-//           return const CircularProgressIndicator();
-//         } else if (snapshot.hasData) {
-//           // User is signed in
-//           print('User is signed in!');
-//           return const HomePage();
-//         } else {
-//           // User is not signed in
-//           print('User is currently signed out!');
-//           return const SignupPage();  
-//         }
-//     }
-//     );
-//   }
-// }
 
 

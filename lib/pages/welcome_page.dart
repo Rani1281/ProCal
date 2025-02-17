@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:procal/pages/auth_pages/main_auth.dart';
 import 'package:procal/models/auth_page_design.dart';
-import 'package:procal/models/my_button.dart';
+import 'package:procal/components/my_button.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
