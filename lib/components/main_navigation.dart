@@ -5,6 +5,7 @@ import 'package:procal/pages/nav_pages/home_page/main_home_page.dart';
 import 'package:procal/pages/nav_pages/home_page/profile_page.dart';
 import 'package:procal/pages/nav_pages/progress_page/main_progress_page.dart';
 import 'package:procal/pages/nav_pages/schedule_page/main_schedule_page.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -33,25 +34,47 @@ class _MainNavigationState extends State<MainNavigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[200],
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       appBar: AppBar(
-          title: const Text('PROCAL'),
-          centerTitle: true,
-          actions: [
-            IconButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const FoodSearchPage()));
-                },
-                icon: Icon(Icons.search))
-          ],
-          leading: IconButton(
+        backgroundColor: Colors.grey[200],
+        title: Text(
+          'PROCAL',
+            style: GoogleFonts.audiowide(
+          ),
+        ),
+        centerTitle: true,
+        
+        leading: IconButton(
+          icon: Icon(Icons.menu),
+          onPressed: () {
+
+          },
+        ),
+    
+        actions: [
+          IconButton(
             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfilePage())),
-            icon: Icon(Icons.account_circle),
-          )),
+            icon: const Icon(Icons.account_circle),
+          )
+        ],
+      ), 
+
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.lightBlue,
+        foregroundColor: Colors.white,
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => const FoodSearchPage()),
+          );
+        },
+        shape: const CircleBorder(),
+        child: const Icon(Icons.search),
+      ),
+      
       body: pages[currentPageIndex],
       bottomNavigationBar: NavigationBar(
+        backgroundColor: Colors.grey[200],
         destinations: myDestinations,
         onDestinationSelected: (selectedIndex) {
           setState(() {

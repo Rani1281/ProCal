@@ -44,14 +44,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: Icon(Icons.search),
-        backgroundColor: Colors.lightBlue,
-      ),
-      body: Padding(
+    return Padding(
         padding: const EdgeInsets.all(15.0),
         child: Center(
           child: Column(
@@ -65,8 +58,7 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-      ),
-    );
+      ); 
   }
 
   bool isAnon() {

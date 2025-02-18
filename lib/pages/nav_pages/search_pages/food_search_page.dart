@@ -59,6 +59,7 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
             print('Submitted!');
             search(input);
           },
+          autofocus: true,
         ),
       ),
       body: Padding(

@@ -10,7 +10,8 @@ class MyTextField extends StatelessWidget {
     this.endIcon,
     this.sumbitType,
     this.onSubmitted,
-    this.onTap
+    this.onTap,
+    this.autofocus
   });
 
   final TextEditingController controller;
@@ -20,6 +21,7 @@ class MyTextField extends StatelessWidget {
   final TextInputAction? sumbitType;
   final void Function(String)? onSubmitted;
   final void Function()? onTap;
+  final bool? autofocus;
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +43,7 @@ class MyTextField extends StatelessWidget {
 
       onSubmitted: onSubmitted,
       onTap: onTap,
+      autofocus: autofocus ?? false,
     );
   }
 }

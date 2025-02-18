@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:procal/main_navigation.dart';
+import 'package:procal/components/main_navigation.dart';
 import 'package:procal/pages/auth_pages/main_auth.dart';
 import 'package:procal/pages/nav_pages/home_page/main_home_page.dart';
 import 'package:procal/pages/auth_pages/verify_email_page.dart';
@@ -56,6 +56,9 @@ class _MyAppState extends State<MyApp> {
           //return AuthPage(destination: 'sign-up');
           return const MainAuthPage(destination: AuthPages.signUp);
         },
+      ),
+      theme: ThemeData(
+        primarySwatch: Colors.lightBlue,
       ),
     );
   }
