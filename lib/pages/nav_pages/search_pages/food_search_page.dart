@@ -73,13 +73,32 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
               : Expanded(
                 child: Column(
                   children: [
-                    Row(
+                    foods!.isNotEmpty
+                    ? Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text('Search results', style: TextStyle(fontWeight: FontWeight.bold),),
                         Text(foods?.length.toString() ?? '0')
                       ],
+                    )
+                    : Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('No results', style: TextStyle(fontWeight: FontWeight.bold),),
+                        GestureDetector(
+                          onTap: () {},
+                          child: const Text(
+                            'Report food',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.lightBlue,
+                            ),
+                            
+                          ),
+                        )
+                      ],
                     ),
+                    
                     const SizedBox(height: 10),
                     Expanded(
                       child: ListView.builder(

@@ -42,6 +42,11 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+
+  void uploadFoodData() {
+    _firestore.uploadJsonToFirestore();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -54,6 +59,7 @@ class _HomePageState extends State<HomePage> {
                   "Welcome To PROCAL ! ${FirebaseAuth.instance.currentUser!.displayName}"),
               const SizedBox(height: 15),
 
+              ElevatedButton(onPressed: null, child: const Text('UPLOAD FOOD DATA'))
 
             ],
           ),

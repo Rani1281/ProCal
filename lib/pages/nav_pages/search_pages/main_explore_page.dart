@@ -54,11 +54,13 @@ class _ExplorePageState extends State<ExplorePage> {
             ]),
           ),
           
+          // Catagories
           SliverGrid(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
             ),
             delegate: SliverChildListDelegate([
+              // Should change the pictures later
               const FoodCatagoryItem(imgPath: 'assets/steak.jpeg', text: 'Meat'),
               const FoodCatagoryItem(imgPath: 'assets/Dairy.jpg', text: 'Dairy'),
               const FoodCatagoryItem(imgPath: 'assets/Grains.jpg', text: 'Grains'),
