@@ -7,14 +7,15 @@ import 'package:procal/pages/auth_pages/main_auth.dart';
 import 'package:procal/pages/nav_pages/home_page/main_home_page.dart';
 import 'package:procal/pages/auth_pages/verify_email_page.dart';
 import 'package:procal/models/auth_page_design.dart';
+import 'package:procal/services/firebase_firestore.dart';
 import 'firebase_options.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
   runApp(const MyApp());
 }
 

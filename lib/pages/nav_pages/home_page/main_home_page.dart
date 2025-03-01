@@ -1,6 +1,5 @@
 // ignore_for_file: avoid_print
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:procal/pages/auth_pages/main_auth.dart';
@@ -10,8 +9,6 @@ import 'package:procal/services/firebase_firestore.dart';
 import 'package:procal/models/auth_page_design.dart';
 import 'package:procal/models/my_toast.dart';
 
-import 'dart:convert';
-import 'package:flutter/services.dart' show rootBundle;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -25,27 +22,6 @@ class _HomePageState extends State<HomePage> {
   final FirestoreService _firestore = FirestoreService();
   final User? user = FirebaseAuth.instance.currentUser;
 
-  Future<void> deleteUser() async {
-    if (user != null) {
-      DeleteUserResult? result = await _auth.deleteUserAccount();
-      if (result != null) {
-        MyToast.show(result.errorMessage!);
-        if (result.isSuccessful == false) {
-          // Navigate to re-login page
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      const MainAuthPage(destination: AuthPages.reAuth)));
-        }
-      }
-    }
-  }
-
-
-  void uploadFoodData() {
-    _firestore.uploadJsonToFirestore();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,18 +35,11 @@ class _HomePageState extends State<HomePage> {
                   "Welcome To PROCAL ! ${FirebaseAuth.instance.currentUser!.displayName}"),
               const SizedBox(height: 15),
 
-              ElevatedButton(onPressed: null, child: const Text('UPLOAD FOOD DATA'))
+              ElevatedButton(onPressed: null, child: const Text('Add lowercase'))
 
             ],
           ),
         ),
       ); 
-  }
-
-  bool isAnon() {
-    if (user!.isAnonymous) {
-      return true;
-    }
-    return false;
   }
 }

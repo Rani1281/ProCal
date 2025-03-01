@@ -186,7 +186,11 @@ class MainAuthPageState extends State<MainAuthPage> {
               ),
               const SizedBox(height: 20),
 
-              SignInButton(Buttons.google, onPressed: _auth.signInWithGoogle),
+              //SignInButton(Buttons.google, onPressed: _auth.signInWithGoogle),
+              MyButton(
+                text: "Continue with Google",
+                onPressed: _auth.signInWithGoogle,
+              ),
 
               // Continue with google button
               // Row(

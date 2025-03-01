@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
@@ -63,18 +64,23 @@ class FirestoreService {
 
   // Get foods in firestore from a search parameter
   Future<List<Map<String,dynamic>>> searchFood(String searchStr) async {
-    final foodsCollection = _firestore.collection('foods');
+    try {
+      final foodsCollection = _firestore.collection('foods');
 
-    // Later change to where method (and adding a lowercase field to each food)
-    QuerySnapshot querySnapshot = await foodsCollection.limit(500).get();
+      // Later change to where method (and adding a lowercase field to each food)
+      QuerySnapshot querySnapshot = await foodsCollection
+      .where('lowercaseName', isGreaterThanOrEqualTo: searchStr.toLowerCase())
+      .limit(20)
+      .get();
+      
+      return querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+    } catch (e) {
+      print("An error accured: $e");
+      return [];
+    }
     
-    return querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>)
-      .where((food) {
-        String foodName = (food['description'] ?? 'Empty');
-        foodName = foodName.toLowerCase();
-        return foodName.contains(searchStr.toLowerCase());
-      }).toList();
   }
+
 
   Future<void> uploadJsonToFirestore() async {
 
@@ -115,4 +121,52 @@ class FirestoreService {
       onError: (e) => print("Error completing: $e")
     );
   }
+
+
+  Future<void> addLowercaseName() async {
+  const int batchSize = 50; // Adjust as needed
+  QuerySnapshot<Map<String, dynamic>>? lastBatch;
+  int updated = 0;
+
+  try {
+    do {
+      var query = _firestore
+          .collection('foods')
+          .orderBy(FieldPath.documentId)
+          .limit(batchSize);
+
+      // If this isn't the first batch, start after the last document of previous batch
+      if (lastBatch != null && lastBatch.docs.isNotEmpty) {
+        query = query.startAfterDocument(lastBatch.docs.last);
+      }
+
+      lastBatch = await query.get(); // Fetch next batch
+      WriteBatch batch = FirebaseFirestore.instance.batch();
+
+      for (var doc in lastBatch.docs) {
+        var data = doc.data();
+        if (!data.containsKey('lowercaseName')) {
+          var description = data['description'];
+          if (description != null && description is String) {
+            String lowercaseName = description.toLowerCase();
+            batch.update(doc.reference, {'lowercaseName': lowercaseName}); // Modify as needed
+            updated++;
+          } else {
+            print('Document ${doc.id} does not have a valid description field.');
+          }
+        }
+      }
+
+      await batch.commit(); // Apply updates in batch
+      await Future.delayed(Duration(milliseconds: 500)); // Short delay to avoid Firestore rate limits
+
+    } while (lastBatch.docs.length == batchSize); // Continue if more documents exist
+
+    print("A TOTAL OF $updated DOCUMENTS WERE UPDATED");
+  } catch (e) {
+    print('An error occurred during the batch update: $e');
+  }
+}
+
+  
 }

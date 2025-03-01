@@ -20,7 +20,7 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
 
   final FirestoreService _firestore = FirestoreService();
 
-  List<Map<String, dynamic>>? foods;
+  List<Map<String, dynamic>> foods = [];
 
   bool isLoading = false;
   bool isNotEmpty = false;
@@ -56,6 +56,7 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
           endIcon: IconButton(onPressed: () {}, icon: Icon(Icons.search)),
           sumbitType: TextInputAction.search,
           onSubmitted: (input) {
+            input.trim;
             print('Submitted!');
             search(input);
           },
@@ -73,12 +74,12 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
               : Expanded(
                 child: Column(
                   children: [
-                    foods!.isNotEmpty
+                    foods.isNotEmpty
                     ? Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text('Search results', style: TextStyle(fontWeight: FontWeight.bold),),
-                        Text(foods?.length.toString() ?? '0')
+                        Text(foods.length.toString())
                       ],
                     )
                     : Row(
@@ -102,11 +103,11 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
                     const SizedBox(height: 10),
                     Expanded(
                       child: ListView.builder(
-                        itemCount: foods?.length ?? 0,
+                        itemCount: foods.length,
                         itemBuilder: (context, i) {
-                          final food = foods?[i];
-                          final description = food?['description'] ?? 'No description';
-                          final category = food?['foodCategory']?['description'] ?? 'Other foods';
+                          final food = foods[i];
+                          final description = food['description'] ?? 'No description';
+                          final category = food['foodCategory']['description'] ?? 'Other foods';
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 5),
                             child: ListTile(
