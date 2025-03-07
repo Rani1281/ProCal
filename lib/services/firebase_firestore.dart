@@ -79,91 +79,91 @@ class FirestoreService {
   }
 
 
-  Future<void> uploadJsonToFirestore() async {
+  // Future<void> uploadJsonToFirestore() async {
 
-    final foodCollection = FirebaseFirestore.instance.collection('foods');
+  //   final foodCollection = FirebaseFirestore.instance.collection('foods');
 
-    try {
-      String jsonString = await rootBundle.loadString("assets/sr_legacy_foods.json");
-      final Map<String, dynamic> jsonData = json.decode(jsonString);
+  //   try {
+  //     String jsonString = await rootBundle.loadString("assets/sr_legacy_foods.json");
+  //     final Map<String, dynamic> jsonData = json.decode(jsonString);
 
-      // Extract the list of foods
-      final List<dynamic> foodList = jsonData['SRLegacyFoods'];
+  //     // Extract the list of foods
+  //     final List<dynamic> foodList = jsonData['SRLegacyFoods'];
 
-      for (var food in foodList) {
-        await foodCollection.add(food);
-      }
+  //     for (var food in foodList) {
+  //       await foodCollection.add(food);
+  //     }
 
-      print("Uploaded successfuly!");
-    } catch (e) {
-      print(e);
-    }
-  }
-
-
-  void printAllCategories() async {
-    List<String> allCategories = [];
-    _firestore.collection("foods").get().then(
-      (querySnapshot) {
-        print('GOT ALL DOCS!');
-        for(var docSnapshot in querySnapshot.docs) {
-          final doc = docSnapshot.data();
-          final categoryName = doc['foodCategory']?['description'];
-          if (!allCategories.contains(categoryName) && categoryName != null) {
-            allCategories.add(categoryName);
-            print(categoryName);
-          }
-        }
-      },
-      onError: (e) => print("Error completing: $e")
-    );
-  }
+  //     print("Uploaded successfuly!");
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
 
 
-  Future<void> addLowercaseName() async {
-  const int batchSize = 50; // Adjust as needed
-  QuerySnapshot<Map<String, dynamic>>? lastBatch;
-  int updated = 0;
+  // void printAllCategories() async {
+  //   List<String> allCategories = [];
+  //   _firestore.collection("foods").get().then(
+  //     (querySnapshot) {
+  //       print('GOT ALL DOCS!');
+  //       for(var docSnapshot in querySnapshot.docs) {
+  //         final doc = docSnapshot.data();
+  //         final categoryName = doc['foodCategory']?['description'];
+  //         if (!allCategories.contains(categoryName) && categoryName != null) {
+  //           allCategories.add(categoryName);
+  //           print(categoryName);
+  //         }
+  //       }
+  //     },
+  //     onError: (e) => print("Error completing: $e")
+  //   );
+  // }
 
-  try {
-    do {
-      var query = _firestore
-          .collection('foods')
-          .orderBy(FieldPath.documentId)
-          .limit(batchSize);
 
-      // If this isn't the first batch, start after the last document of previous batch
-      if (lastBatch != null && lastBatch.docs.isNotEmpty) {
-        query = query.startAfterDocument(lastBatch.docs.last);
-      }
+//   Future<void> addLowercaseName() async {
+//   const int batchSize = 50; // Adjust as needed
+//   QuerySnapshot<Map<String, dynamic>>? lastBatch;
+//   int updated = 0;
 
-      lastBatch = await query.get(); // Fetch next batch
-      WriteBatch batch = FirebaseFirestore.instance.batch();
+//   try {
+//     do {
+//       var query = _firestore
+//           .collection('foods')
+//           .orderBy(FieldPath.documentId)
+//           .limit(batchSize);
 
-      for (var doc in lastBatch.docs) {
-        var data = doc.data();
-        if (!data.containsKey('lowercaseName')) {
-          var description = data['description'];
-          if (description != null && description is String) {
-            String lowercaseName = description.toLowerCase();
-            batch.update(doc.reference, {'lowercaseName': lowercaseName}); // Modify as needed
-            updated++;
-          } else {
-            print('Document ${doc.id} does not have a valid description field.');
-          }
-        }
-      }
+//       // If this isn't the first batch, start after the last document of previous batch
+//       if (lastBatch != null && lastBatch.docs.isNotEmpty) {
+//         query = query.startAfterDocument(lastBatch.docs.last);
+//       }
 
-      await batch.commit(); // Apply updates in batch
-      await Future.delayed(Duration(milliseconds: 500)); // Short delay to avoid Firestore rate limits
+//       lastBatch = await query.get(); // Fetch next batch
+//       WriteBatch batch = FirebaseFirestore.instance.batch();
 
-    } while (lastBatch.docs.length == batchSize); // Continue if more documents exist
+//       for (var doc in lastBatch.docs) {
+//         var data = doc.data();
+//         if (!data.containsKey('lowercaseName')) {
+//           var description = data['description'];
+//           if (description != null && description is String) {
+//             String lowercaseName = description.toLowerCase();
+//             batch.update(doc.reference, {'lowercaseName': lowercaseName}); // Modify as needed
+//             updated++;
+//           } else {
+//             print('Document ${doc.id} does not have a valid description field.');
+//           }
+//         }
+//       }
 
-    print("A TOTAL OF $updated DOCUMENTS WERE UPDATED");
-  } catch (e) {
-    print('An error occurred during the batch update: $e');
-  }
-}
+//       await batch.commit(); // Apply updates in batch
+//       await Future.delayed(Duration(milliseconds: 500)); // Short delay to avoid Firestore rate limits
+
+//     } while (lastBatch.docs.length == batchSize); // Continue if more documents exist
+
+//     print("A TOTAL OF $updated DOCUMENTS WERE UPDATED");
+//   } catch (e) {
+//     print('An error occurred during the batch update: $e');
+//   }
+// }
 
   
 }
