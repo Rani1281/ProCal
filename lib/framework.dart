@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:procal/pages/nav_pages/search_pages/food_search_page.dart';
-import 'package:procal/pages/nav_pages/search_pages/main_explore_page.dart';
-import 'package:procal/pages/nav_pages/home_page/main_home_page.dart';
-import 'package:procal/pages/nav_pages/home_page/profile_page.dart';
-import 'package:procal/pages/nav_pages/progress_page/main_progress_page.dart';
-import 'package:procal/pages/nav_pages/schedule_page/main_schedule_page.dart';
+import 'package:procal/pages/navigation/food_search_page.dart';
+import 'package:procal/pages/navigation/explore_page.dart';
+import 'package:procal/pages/navigation/home_page.dart';
+import 'package:procal/pages/app_bar/profile_page.dart';
+import 'package:procal/pages/navigation/progress_page.dart';
+import 'package:procal/pages/navigation/schedule_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class MainNavigation extends StatefulWidget {
@@ -24,7 +24,7 @@ class _MainNavigationState extends State<MainNavigation> {
     const ProgressPage(),
   ];
 
-  final List<Widget> myDestinations = const [
+  final myDestinations = const [
     NavigationDestination(icon: Icon(Icons.home_outlined), label: 'Home'),
     NavigationDestination(icon: Icon(Icons.explore_outlined), label: 'Explore'),
     NavigationDestination(icon: Icon(Icons.list_alt), label: 'Schedule'),
@@ -44,22 +44,19 @@ class _MainNavigationState extends State<MainNavigation> {
           ),
         ),
         centerTitle: true,
-        
         leading: IconButton(
-          icon: Icon(Icons.menu),
+          icon: const Icon(Icons.menu),
           onPressed: () {
-
+            // Open drawer
           },
         ),
-    
         actions: [
           IconButton(
             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfilePage())),
             icon: const Icon(Icons.account_circle),
           )
         ],
-      ), 
-
+      ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.lightBlue,
         foregroundColor: Colors.white,

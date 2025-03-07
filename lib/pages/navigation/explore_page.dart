@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:procal/components/food_catagory_item.dart';
 import 'package:procal/components/my_text_field.dart';
-import 'package:procal/pages/nav_pages/search_pages/food_search_page.dart';
+import 'package:procal/pages/navigation/food_search_page.dart';
 
 class ExplorePage extends StatefulWidget {
   const ExplorePage({super.key});

@@ -23,26 +23,42 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
   List<Map<String, dynamic>> foods = [];
 
   bool isLoading = false;
-  bool isNotEmpty = false;
+  bool isSearchNotEmpty = false;
   
 
   Future<void> search(String searchStr) async {
-    if(searchStr != '') {
+    searchStr = searchStr.trim();
+    if(searchStr.isNotEmpty) {
       setState(() {
-        isNotEmpty = true;
+        isSearchNotEmpty = true;
         isLoading = true;
       });
-      final results = await _firestore.searchFood(searchStr)
-      .then((value) {
-        print('Search was successful!');
-        return value;
-      });
-      setState(() {
-        foods = results;
+      try {
+        final results = await _firestore.searchFood(searchStr);
+        if(results.isNotEmpty) {
+          setState(() {
+            foods = filterResults(results, searchStr);
+          });
+        }
         isLoading = false;
-      });
+        print('Search was successful!');
+      } catch (e) {
+        setState(() {
+          isLoading = false;
+        });
+        print('An error occurred during the search: $e');
+      }
+      
     }
     // Display the logging history
+  }
+
+  List<Map<String, dynamic>> filterResults(List<Map<String, dynamic>> results, String searchedFood) {
+    return results.where((result) {
+      String foodName = result['lowercaseName'] ?? '';
+      foodName = foodName.replaceAll(',', '');
+      return foodName.contains(searchedFood.toLowerCase());
+    }).toList();
   }
 
   @override
@@ -68,9 +84,9 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
         child: Column(
           children: [
             // List
-            isNotEmpty
+            isSearchNotEmpty
             ?  isLoading
-              ? const Center(child: CircularProgressIndicator())
+                ? const Expanded(child: Center(child: CircularProgressIndicator()))
               : Expanded(
                 child: Column(
                   children: [

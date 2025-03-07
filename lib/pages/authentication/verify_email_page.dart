@@ -1,9 +1,7 @@
-
-
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:procal/pages/nav_pages/home_page/main_home_page.dart';
+import 'package:procal/pages/navigation/home_page.dart';
 import 'package:procal/services/firebase_auth.dart';
 import 'package:procal/services/firebase_firestore.dart';
 
@@ -76,12 +74,13 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
             const SizedBox(height: 15),
             // Delete account button
             ElevatedButton(
-              onPressed: () {
-                if (user != null) {
-                  _firestore.deleteUser(user!.uid);
-                  _auth.deleteUserAccount();
-                }
-              },
+              onPressed: null,
+              // () {
+              //   if (user != null) {
+              //     _firestore.deleteUser(user!.uid);
+              //     _auth.deleteUserAccount();
+              //   }
+              // },
               child: const Text('Delete Account'),
             ),
             const SizedBox(height: 15),

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:procal/pages/auth_pages/main_auth.dart';
+import 'package:procal/pages/authentication/main_auth.dart';
 import 'package:procal/models/delete_user_result.dart';
 import 'package:procal/services/firebase_auth.dart';
 import 'package:procal/services/firebase_firestore.dart';
@@ -17,45 +17,74 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
 
-  final User? user = FirebaseAuth.instance.currentUser;
   final AuthService _auth = AuthService();
+
+  String? email;
+  String? username;
+  String? photoURL;
+
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchAllUserInfo();
+  }
+
+  void fetchAllUserInfo() {
+    User user = FirebaseAuth.instance.currentUser!;
+    // set state
+    setState(() {
+      email = user.email;
+      username = user.displayName;
+      photoURL = user.photoURL;
+
+      isLoading = false;
+    });
+  }
   
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
-
       appBar: AppBar(
         title: const Text('Profile'),
       ),
-
-      body: Padding(
+      body: isLoading
+      ? const Center(child: CircularProgressIndicator())
+      : Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
             Center(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(100),
-                child: Image.network(
-                  user?.photoURL
-                  ?? 'https://static-00.iconduck.com/assets.00/profile-circle-icon-512x512-zxne30hp.png',
+                child: Image(
+                  image: NetworkImage(
+                    photoURL!,
+                  ),
                   fit: BoxFit.cover,
-                  height: 130,
                   width: 130,
-                  
+                  height: 130,
                   loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) {
+                    if(loadingProgress == null) {
                       return child;
                     }
-                    return const Center(
-                      child: CircularProgressIndicator(),
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return const CircularProgressIndicator();
+                        // Maybe need to pop
+                      },
                     );
+                    return const SizedBox();
                   },
                   errorBuilder: (context, error, stackTrace) {
-                    return const Icon(Icons.account_circle);
+                    return const Image(
+                      image: AssetImage('assets/profile.png'),
+                    );
                   },
-                ),
+                )
               ),
             ),
             const Divider(height: 50),
@@ -65,19 +94,18 @@ class _ProfilePageState extends State<ProfilePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text('Username'),
-                Text(user?.displayName ?? 'Empty'),
+                Text(username ?? 'Empty'),
 
                 const SizedBox(height: 10),
                 
                 const Text('Email'),
-                Text(user?.email ?? 'Empty'),
+                Text(email ?? 'Empty'),
                 
                 const Divider(height: 50),
               ],
             ),
             
             
-
             Column(
               children: [
               // Log out button
@@ -93,10 +121,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                 // Delete account button
                 ElevatedButton(
-                  onPressed: () {
-                    deleteUser();
-                    Navigator.pop(context);
-                  },
+                  onPressed: null,
                  child: const Text('Delete Account')
                 ),
               ],
@@ -107,20 +132,23 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Future<void> deleteUser() async {
-    if(user != null){
-      DeleteUserResult? result = await _auth.deleteUserAccount();
-      if(result != null) {
-        MyToast.show(result.errorMessage!);
-        if(result.isSuccessful == false) {
-          // Navigate to re-login page
-          Navigator.push(
-            context, MaterialPageRoute(
-              builder: (context) => const MainAuthPage(destination: AuthPages.reAuth)
-            )
-          );
-        }
-      }
-    }
-  }
+  // Future<void> deleteUser() async {
+  //   if(user != null){
+  //     var result = await _auth.deleteUserAccount();
+  //     if(result != null) {
+
+  //       //MyToast.show(result[1]);
+  //       if(result[0] == false) { // didn't work
+  //         Navigator.push(
+  //           context, MaterialPageRoute(
+  //             builder: (context) => const MainAuthPage(destination: AuthPages.reAuth)
+  //           )
+  //         );
+  //       }
+  //       else {
+
+  //       }
+  //     }
+  //   }
+  // }
 }
