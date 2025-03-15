@@ -1,63 +1,54 @@
+import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
-
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
 
 class FoodDataCentral {
   final String jsonFilePath;
+  final String jsonDataKey;
 
-  FoodDataCentral(this.jsonFilePath);
-
-  Future<List<Map<String, dynamic>>?> convertJson() async {
-    try {
-      String jsonString = await File(jsonFilePath).readAsString();
-      final Map<String, dynamic> jsonData = json.decode(jsonString);
-
-      // Extract the list of foods
-      final List foodList = jsonData['SRLegacyFoods'];
-
-      print("Conversion successful!");
-
-      return foodList as List<Map<String, dynamic>>;
-    } catch (e) {
-      print("Error during JSON conversion: $e");
-    }
-    return null;
-  }
+  FoodDataCentral(this.jsonFilePath, this.jsonDataKey);
 
   Future<void> uploadFoodsToFirestore() async {
-    var foods = await convertJson();
+    try {
+      ByteData data = await rootBundle.load(jsonFilePath);
+      String jsonString = utf8.decode(data.buffer.asUint8List());
 
-    if (foods != null) {
-      // Split the list into chunks of 500
-      List<List<Map<String, dynamic>>> chunks = [];
-      int chunkSize = 500;
+      print("Decoding successful!");
 
-      for (var i = 0; i < foods.length; i += chunkSize) {
-        chunks.add(foods.sublist(i, i + chunkSize > foods.length ? foods.length : i + chunkSize));
-      }
+      // Process the JSON string in chunks
+      final jsonData = json.decode(jsonString);
+      if (jsonData.containsKey(jsonDataKey)) {
+        // Extract
+        List<Map<String, dynamic>> foodList = List<Map<String, dynamic>>.from(jsonData[jsonDataKey]);
+        print("Extraction successful!");
 
-      // Upload each chunk to Firestore
-      for (var chunk in chunks) {
-        WriteBatch batch = FirebaseFirestore.instance.batch();
-
-        for (var food in chunk) {
-          // Add the this field before uploading to Firestore
-          addMoreSearchableField(food);
-          DocumentReference docRef = FirebaseFirestore.instance.collection('foods_info').doc();
-          batch.set(docRef, food);
+        // Upload each food item individually with rate limiting
+        for (var food in foodList) {
+          await _uploadFood(food);
+          await Future.delayed(Duration(milliseconds: 100)); // Rate limit: 10 writes per second
         }
 
-        try {
-          await batch.commit();
-        } catch (e) {
-          print("Error during batch commit: $e");
-        }
+        print("Upload successful!");
+      } else {
+        print("No foods to upload.");
       }
+    } catch (e) {
+      print("Error during JSON conversion or upload: $e");
+    }
+  }
 
-      print("Upload successful!");
-    } else {
-      print("No foods to upload.");
+  Future<void> _uploadFood(Map<String, dynamic> food) async {
+    try {
+      WriteBatch batch = FirebaseFirestore.instance.batch();
+      addMoreSearchableField(food);
+      DocumentReference docRef = FirebaseFirestore.instance.collection('foods').doc();
+      batch.set(docRef, food);
+      await batch.commit();
+      print('Uploaded food item successfully');
+    } catch (e) {
+      print('Error uploading food item: $e');
     }
   }
 

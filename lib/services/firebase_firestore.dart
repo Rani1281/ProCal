@@ -79,26 +79,26 @@ class FirestoreService {
   }
 
 
-  // Future<void> uploadJsonToFirestore() async {
+  Future<void> uploadJsonToFirestore() async {
 
-  //   final foodCollection = FirebaseFirestore.instance.collection('foods');
+    final foodCollection = FirebaseFirestore.instance.collection('foods');
 
-  //   try {
-  //     String jsonString = await rootBundle.loadString("assets/sr_legacy_foods.json");
-  //     final Map<String, dynamic> jsonData = json.decode(jsonString);
+    try {
+      String jsonString = await rootBundle.loadString("assets/sr_legacy_foods.json");
+      final Map<String, dynamic> jsonData = json.decode(jsonString);
 
-  //     // Extract the list of foods
-  //     final List<dynamic> foodList = jsonData['SRLegacyFoods'];
+      // Extract the list of foods
+      final List<dynamic> foodList = jsonData['SRLegacyFoods'];
 
-  //     for (var food in foodList) {
-  //       await foodCollection.add(food);
-  //     }
+      for (var food in foodList) {
+        await foodCollection.add(food);
+      }
 
-  //     print("Uploaded successfuly!");
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  // }
+      print("Uploaded successfuly!");
+    } catch (e) {
+      print(e);
+    }
+  }
 
 
   // void printAllCategories() async {
