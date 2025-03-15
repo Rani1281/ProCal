@@ -35,10 +35,14 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
       });
       try {
         final results = await _firestore.searchFood(searchStr);
+        
         if(results.isNotEmpty) {
           setState(() {
-            foods = filterResults(results, searchStr);
+            foods = filterSearchResults(results, searchStr);
           });
+        }
+        else {
+          print("No results");
         }
         isLoading = false;
         print('Search was successful!');
@@ -53,31 +57,92 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
     // Display the logging history
   }
 
-  List<Map<String, dynamic>> filterResults(List<Map<String, dynamic>> results, String searchedFood) {
-    return results.where((result) {
-      String foodName = result['lowercaseName'] ?? '';
-      foodName = foodName.replaceAll(',', '');
-      return foodName.contains(searchedFood.toLowerCase());
-    }).toList();
+
+  List<Map<String, dynamic>> filterSearchResults(List<Map<String, dynamic>> results, String searchStr) {
+    List<Map<String, dynamic>> filteredResults = [];
+
+    for (var result in results) {
+      if (result.containsKey("search_name")) {
+
+        bool isFound = listContains(result, searchStr);
+
+        if (isFound) {
+          filteredResults.add(result);
+          print('Removed item');
+        }
+      }
+      else {
+        print("Doesn't contain key");
+      }
+    }
+    return filteredResults;
   }
+
+  bool listContains(Map<String, dynamic> result, String searchStr) {
+    searchStr.toLowerCase();
+
+    String resultName = result["search_name"];
+    List<String> resultWords = resultName.split(' ');
+    List<String> searchWords = searchStr.split(' ');
+
+    for (var searchWord in searchWords) {
+      for (var resultWord in resultWords) {
+        if (searchWord == resultWord || resultWord.contains(searchWord)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  //   for (var result in results) {
+  //     for (var searchWord in searchWords) {
+  //       if (item.toLowerCase() == searchStr || item.contains(searchStr)) {
+  //         return true;
+  //       }
+  //     }
+      
+  //   }
+  //   return false;
+  // }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         centerTitle: true,
-        title: MyTextField(
+        title: TextField(
           controller: _foodSearchController,
-          hintText: 'Search a food...',
-          endIcon: IconButton(onPressed: () {}, icon: Icon(Icons.search)),
-          sumbitType: TextInputAction.search,
           onSubmitted: (input) {
             input.trim;
             print('Submitted!');
             search(input);
           },
+          decoration: InputDecoration(
+            filled: false,
+            hintText: "Search a food...",
+            prefixIcon: IconButton(onPressed: () {
+              Navigator.pop(context);
+            }, icon: Icon(Icons.arrow_back)),
+            suffixIcon: IconButton(onPressed: () {}, icon: Icon(Icons.search)),
+          ),
           autofocus: true,
+          textInputAction: TextInputAction.search,
+          
         ),
+        // title: MyTextField(
+        //   controller: _foodSearchController,
+        //   hintText: 'Search a food...',
+        //   endIcon: IconButton(onPressed: () {}, icon: Icon(Icons.search)),
+        //   sumbitType: TextInputAction.search,
+        // onSubmitted: (input) {
+        //   input.trim;
+        //   print('Submitted!');
+        //   search(input);
+        // },
+        //   autofocus: true,
+        // ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(15),

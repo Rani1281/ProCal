@@ -66,8 +66,8 @@ class FirestoreService {
 
       // Later change to where method (and adding a lowercase field to each food)
       QuerySnapshot querySnapshot = await foodsCollection
-      .where('lowercaseName', isGreaterThanOrEqualTo: searchStr.toLowerCase())
-      .limit(20)
+      .where('search_name', isGreaterThanOrEqualTo: searchStr.toLowerCase())
+      .limit(50)
       .get();
       
       return querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
@@ -76,28 +76,6 @@ class FirestoreService {
       return [];
     }
     
-  }
-
-
-  Future<void> uploadJsonToFirestore() async {
-
-    final foodCollection = FirebaseFirestore.instance.collection('foods');
-
-    try {
-      String jsonString = await rootBundle.loadString("assets/sr_legacy_foods.json");
-      final Map<String, dynamic> jsonData = json.decode(jsonString);
-
-      // Extract the list of foods
-      final List<dynamic> foodList = jsonData['SRLegacyFoods'];
-
-      for (var food in foodList) {
-        await foodCollection.add(food);
-      }
-
-      print("Uploaded successfuly!");
-    } catch (e) {
-      print(e);
-    }
   }
 
 

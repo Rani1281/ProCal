@@ -19,21 +19,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final AuthService _auth = AuthService();
-  final FirestoreService _firestore = FirestoreService();
   
   final User? user = FirebaseAuth.instance.currentUser;
 
-  void uploadFoods() async {
-    try {
-      String filePath = "assets/srLegacyDownload.json";
-      String key = "SRLegacyFoods";
-      final FoodDataCentral fdc = FoodDataCentral(filePath, key);
-      await fdc.uploadFoodsToFirestore();
-    } catch (e) {
-      print("An error occured: $e");
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,9 +34,6 @@ class _HomePageState extends State<HomePage> {
               Text(
                   "Welcome To PROCAL ! ${FirebaseAuth.instance.currentUser!.displayName}"),
               const SizedBox(height: 15),
-
-              ElevatedButton(onPressed: uploadFoods, child: const Text('Upload foods'))
-
             ],
           ),
         ),
