@@ -1,7 +1,5 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/services.dart';
+
 
 class FirestoreService {
 
@@ -60,11 +58,10 @@ class FirestoreService {
   }
 
   // Get foods in firestore from a search parameter
-  Future<List<Map<String,dynamic>>> searchFood(String searchStr) async {
+  Future<List<Map<String,dynamic>>> searchFoodByGreaterThanOrEqualTo(String searchStr) async {
     try {
       final foodsCollection = _firestore.collection('foods');
 
-      // Later change to where method (and adding a lowercase field to each food)
       QuerySnapshot querySnapshot = await foodsCollection
       .where('search_name', isGreaterThanOrEqualTo: searchStr.toLowerCase())
       .limit(50)
@@ -76,6 +73,26 @@ class FirestoreService {
       return [];
     }
     
+  }
+
+
+  Future<List<Map<String, dynamic>>> searchFoodByArrayContainsAny(List<String> searchQueries) async {
+    try {
+      final foodsCol = _firestore.collection('foods');
+      final querySnapshot = await foodsCol
+      .where('queryNames', arrayContainsAny: searchQueries)
+      .limit(50)
+      .get();
+
+      print('Search was successful!');
+
+      return querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList(); 
+
+    } catch (e) {
+      print("An error accured: $e");
+      
+      return [];
+    }
   }
 
 

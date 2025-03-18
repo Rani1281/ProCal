@@ -1,11 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:procal/services/firebase_firestore.dart';
-import 'package:procal/components/my_text_field.dart';
-import 'package:flutter/foundation.dart';
 
-import 'dart:convert';
-import 'package:flutter/services.dart' show rootBundle;
 
 class FoodSearchPage extends StatefulWidget {
   const FoodSearchPage({super.key});
@@ -25,82 +20,119 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
   bool isLoading = false;
   bool isSearchNotEmpty = false;
   
+  // Search the database by array-contains-any
+  void search(String input) async {
+    if (input.isNotEmpty) {
 
-  Future<void> search(String searchStr) async {
-    searchStr = searchStr.trim();
-    if(searchStr.isNotEmpty) {
+      List<String> searchQueries = prepareInput(input);
+
       setState(() {
         isSearchNotEmpty = true;
         isLoading = true;
       });
+
       try {
-        final results = await _firestore.searchFood(searchStr);
-        
-        if(results.isNotEmpty) {
+        final results = await _firestore.searchFoodByArrayContainsAny(searchQueries);
+
+        if (results.isNotEmpty) {
           setState(() {
-            foods = filterSearchResults(results, searchStr);
+            foods = results;
           });
         }
-        else {
-          print("No results");
-        }
-        isLoading = false;
-        print('Search was successful!');
       } catch (e) {
-        setState(() {
-          isLoading = false;
-        });
         print('An error occurred during the search: $e');
       }
+
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  // perform actions on the input to make it more queriable
+  List<String> prepareInput(String input) {
+    // trim
+    input.trim();
+
+    // lowercase
+    input.toLowerCase();
+
+    // remove symbols
+    input.replaceAll('.', '');
+    input.replaceAll(',', '');
+
+    //split
+    List<String> splittedInput = input.split(' ');
+    
+    return splittedInput;
+  }
+
+
+
+  // Future<void> searchOld(String searchStr) async {
+  //   searchStr = searchStr.trim().toLowerCase();
+  //   if(searchStr.isNotEmpty) {
+  //     setState(() {
+  //       isSearchNotEmpty = true;
+  //       isLoading = true;
+  //     });
+  //     try {
+  //       final results = await _firestore.searchFoodByGreaterThanOrEqualTo(searchStr);
+        
+  //       if(results.isNotEmpty) {
+  //         setState(() {
+  //           foods = filterSearchResults(results, searchStr);
+  //         });
+  //       }
+  //       else {
+  //         print("No results");
+  //       }
+  //       isLoading = false;
+  //       print('Search was successful!');
+  //     } catch (e) {
+  //       setState(() {
+  //         isLoading = false;
+  //       });
+  //       print('An error occurred during the search: $e');
+  //     }
       
-    }
-    // Display the logging history
-  }
+  //   }
+  //   // Display the logging history
+  // }
 
+  // List<Map<String, dynamic>> filterSearchResults(List<Map<String, dynamic>> results, String searchStr) {
+  //   List<Map<String, dynamic>> filteredResults = [];
 
-  List<Map<String, dynamic>> filterSearchResults(List<Map<String, dynamic>> results, String searchStr) {
-    List<Map<String, dynamic>> filteredResults = [];
-
-    for (var result in results) {
-      if (result.containsKey("search_name")) {
-
-        bool isFound = listContains(result, searchStr);
-
-        if (isFound) {
-          filteredResults.add(result);
-          print('Removed item');
-        }
-      }
-      else {
-        print("Doesn't contain key");
-      }
-    }
-    return filteredResults;
-  }
-
-  bool listContains(Map<String, dynamic> result, String searchStr) {
-    searchStr.toLowerCase();
-
-    String resultName = result["search_name"];
-    List<String> resultWords = resultName.split(' ');
-    List<String> searchWords = searchStr.split(' ');
-
-    for (var searchWord in searchWords) {
-      for (var resultWord in resultWords) {
-        if (searchWord == resultWord || resultWord.contains(searchWord)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
   //   for (var result in results) {
-  //     for (var searchWord in searchWords) {
-  //       if (item.toLowerCase() == searchStr || item.contains(searchStr)) {
+  //     if (result.containsKey("search_name")) {
+
+  //       bool isFound = listContains(result, searchStr);
+
+  //       if (isFound) {
+  //         filteredResults.add(result);
+  //         print('Removed item');
+  //       }
+  //     }
+  //     else {
+  //       print("Doesn't contain key");
+  //     }
+  //   }
+  //   return filteredResults;
+  // }
+
+  // bool listContains(Map<String, dynamic> result, String searchStr) {
+  //   searchStr.toLowerCase();
+
+  //   String resultName = result["search_name"];
+  //   List<String> resultWords = resultName.split(' ');
+  //   List<String> searchWords = searchStr.split(' ');
+
+  //   for (var searchWord in searchWords) {
+  //     for (var resultWord in resultWords) {
+  //       if (searchWord == resultWord || resultWord.contains(searchWord)) {
   //         return true;
   //       }
   //     }
-      
   //   }
   //   return false;
   // }
@@ -124,25 +156,12 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
             hintText: "Search a food...",
             prefixIcon: IconButton(onPressed: () {
               Navigator.pop(context);
-            }, icon: Icon(Icons.arrow_back)),
-            suffixIcon: IconButton(onPressed: () {}, icon: Icon(Icons.search)),
+            }, icon: const Icon(Icons.arrow_back)),
+            suffixIcon: IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
           ),
           autofocus: true,
           textInputAction: TextInputAction.search,
-          
         ),
-        // title: MyTextField(
-        //   controller: _foodSearchController,
-        //   hintText: 'Search a food...',
-        //   endIcon: IconButton(onPressed: () {}, icon: Icon(Icons.search)),
-        //   sumbitType: TextInputAction.search,
-        // onSubmitted: (input) {
-        //   input.trim;
-        //   print('Submitted!');
-        //   search(input);
-        // },
-        //   autofocus: true,
-        // ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(15),

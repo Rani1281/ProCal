@@ -4,10 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:procal/framework.dart';
 import 'package:procal/pages/authentication/main_auth.dart';
-import 'package:procal/pages/navigation/home_page.dart';
 import 'package:procal/pages/authentication/verify_email_page.dart';
 import 'package:procal/models/auth_page_design.dart';
-import 'package:procal/services/firebase_firestore.dart';
 import 'firebase_options.dart';
 
 
