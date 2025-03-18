@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:procal/pages/food_logging_page.dart';
 import 'package:procal/services/firebase_firestore.dart';
 
 
@@ -206,18 +207,21 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
                         itemCount: foods.length,
                         itemBuilder: (context, i) {
                           final food = foods[i];
-                          final description = food['description'] ?? 'No description';
-                          final category = food['foodCategory']['description'] ?? 'Other foods';
+                          final description = food['description'] ?? 'Nameless';
+                          final category = food['foodCategory']['description'] ?? 'No category';
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 5),
-                            child: ListTile(
-                              title: Text(description),
-                              subtitle: Text(category),
-                              tileColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15.0),
+                            child: GestureDetector(
+                              child: ListTile(
+                                title: Text(description),
+                                subtitle: Text(category),
+                                tileColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                ),
+                                trailing: const Icon(Icons.add),
                               ),
-                              trailing: const Icon(Icons.add),
+                              onTap: () => goToFoodLoggingPage(context, food),
                             ),
                           );
                         },
@@ -229,6 +233,28 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
             : const Text('Search a food')
           ],
         ),
+      ),
+    );
+  }
+
+  void goToFoodLoggingPage(BuildContext contex, Map<String, dynamic> food) {
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => FoodLoggingPage(food: food),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(1.0, 0.0);  // Slide from right to left
+          const end = Offset.zero;
+          const curve = Curves.easeInOut;
+
+          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          var offsetAnimation = animation.drive(tween);
+
+          return SlideTransition(
+            position: offsetAnimation,
+            child: child,
+          );
+        },
       ),
     );
   }
